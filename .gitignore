@@ -29,6 +29,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+.token.tmp
+soap_request_full.txt
+soap_response_full.txt
+body.xml
 
 # env files (can opt-in for committing if needed)
 .env*

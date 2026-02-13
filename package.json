@@ -1,5 +1,5 @@
 {
-  "name": "ticketsbuzz",
+  "name": "ticketbuzz-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "dotenv": "^17.2.4",
+    "fast-xml-parser": "^4.5.3",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
@@ -22,5 +24,6 @@
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "type": "module"
 }
