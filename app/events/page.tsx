@@ -26,16 +26,37 @@ export default async function EventsPage() {
             key={event.ID}
             style={{
               marginBottom: "20px",
-              padding: "15px",
+              padding: "20px",
               border: "1px solid #ddd",
-              borderRadius: "8px",
+              borderRadius: "10px",
+              background: "#fff",
             }}
           >
-            <h3>{event.Name}</h3>
-            <p>
+            <h3 style={{ marginBottom: 6 }}>{event.Name}</h3>
+
+            <p style={{ fontWeight: "500" }}>📍 {event.Venue}</p>
+
+            <p style={{ color: "#555" }}>
               {event.City}, {event.StateProvince}
             </p>
-            <p>{event.DisplayDate}</p>
+
+            <p style={{ color: "#777" }}>🗓 {event.DisplayDate}</p>
+
+            {event.IsWomensEvent && (
+              <span
+                style={{
+                  display: "inline-block",
+                  marginTop: 8,
+                  padding: "4px 8px",
+                  background: "#fde2e2",
+                  color: "#b00020",
+                  fontSize: "12px",
+                  borderRadius: "6px",
+                }}
+              >
+                Women’s Event
+              </span>
+            )}
           </li>
         ))}
       </ul>

@@ -7,6 +7,7 @@ type EventItem = {
   Venue?: string;
   DisplayDate?: string;
   ParentCategoryID?: number;
+  MapURL?: string;
 };
 
 export default async function CategoryPage({
@@ -14,12 +15,27 @@ export default async function CategoryPage({
 }: {
   params: Promise<{ parentId: string }>;
 }) {
-  const { parentId } = await params; // ✅ important in your Next version
+  const { parentId } = await params; // important in your Next version
   const parentIdNum = Number(parentId);
 
   const res = await fetch("http://localhost:3000/api/events", {
     cache: "no-store",
   });
+
+  if (!res.ok) {
+    return (
+      <main style={{ padding: 40, fontFamily: "Arial" }}>
+        <h1 style={{ fontSize: 40, marginBottom: 10 }}>
+          Category {Number.isFinite(parentIdNum) ? parentIdNum : parentId}
+        </h1>
+        <p style={{ color: "#b00020" }}>
+          Failed to load events (HTTP {res.status})
+        </p>
+        <Link href="/events">← Back to all events</Link>
+      </main>
+    );
+  }
+
   const data = await res.json();
   const events: EventItem[] = data?.result ?? [];
 
@@ -31,9 +47,11 @@ export default async function CategoryPage({
     <main style={{ padding: 40, fontFamily: "Arial" }}>
       <h1 style={{ fontSize: 40, marginBottom: 10 }}>Category {parentIdNum}</h1>
 
-      <Link href="/events">← Back to all events</Link>
+      <div style={{ marginBottom: 18 }}>
+        <Link href="/events">← Back to all events</Link>
+      </div>
 
-      <div style={{ marginTop: 20 }}>
+      <div style={{ marginTop: 10 }}>
         {filtered.length === 0 ? (
           <p>No events in this category.</p>
         ) : (
@@ -45,13 +63,70 @@ export default async function CategoryPage({
                 borderRadius: 10,
                 padding: 16,
                 marginBottom: 14,
+                display: "flex",
+                gap: 16,
+                alignItems: "flex-start",
+                background: "#fff",
               }}
             >
-              <div style={{ fontSize: 18, fontWeight: 700 }}>{event.Name}</div>
-              <div style={{ color: "#555" }}>
-                {event.City} • {event.Venue}
+              {/* Seat map preview (optional) */}
+              {event.MapURL ? (
+                <img
+                  src={event.MapURL}
+                  alt="Seat map"
+                  style={{
+                    width: 120,
+                    borderRadius: 6,
+                    opacity: 0.9,
+                    flexShrink: 0,
+                    border: "1px solid #eee",
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: 120,
+                    height: 80,
+                    borderRadius: 6,
+                    background: "#f3f3f3",
+                    border: "1px solid #eee",
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#777",
+                    fontSize: 12,
+                  }}
+                >
+                  No map
+                </div>
+              )}
+
+              {/* Event info */}
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 700 }}>
+                  {event.Name}
+                </div>
+
+                <div style={{ color: "#555", marginTop: 4 }}>
+                  {event.City}
+                  {event.City && event.Venue ? " • " : ""}
+                  {event.Venue}
+                </div>
+
+                <div style={{ color: "#777", marginTop: 6 }}>
+                  {event.DisplayDate}
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <Link
+                    href={`/event/${event.ID}`}
+                    style={{ textDecoration: "underline" }}
+                  >
+                    View details
+                  </Link>
+                </div>
               </div>
-              <div style={{ color: "#777" }}>{event.DisplayDate}</div>
             </div>
           ))
         )}
