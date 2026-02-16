@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default async function EventsPage() {
   const res = await fetch("http://localhost:3000/api/events", {
     cache: "no-store",
@@ -57,6 +59,16 @@ export default async function EventsPage() {
                 Women’s Event
               </span>
             )}
+
+            {/* 👇 View Details link */}
+            <div style={{ marginTop: 12 }}>
+              <Link
+                href={`/event/${event.ID}`}
+                style={{ textDecoration: "underline" }}
+              >
+                View details →
+              </Link>
+            </div>
           </li>
         ))}
       </ul>
