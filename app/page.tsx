@@ -4,65 +4,6 @@ export default function Home() {
   return (
     <main style={{ fontFamily: "Arial", margin: 0 }}>
       {/* Top nav */}
-      <header style={styles.header}>
-        <nav style={styles.nav}>
-          {/* Left */}
-          <div style={styles.navLeft}>
-            <Link href="/events/2" style={styles.navLink}>
-              Concerts
-            </Link>
-            <Link href="/events/1" style={styles.navLink}>
-              Sports
-            </Link>
-            <Link href="/events/3" style={styles.navLink}>
-              Theater
-            </Link>
-          </div>
-
-          {/* Center Logo */}
-          <div style={styles.navCenter}>
-            <Link href="/">
-              <img src="/logo.png" alt="TicketsBuzz" style={styles.navLogo} />
-            </Link>
-          </div>
-
-          {/* Right */}
-          <div style={styles.navRight}>
-            <form action="/search" style={styles.navSearch}>
-              <input
-                name="q"
-                placeholder="Search for team or artist..."
-                style={styles.navSearchInput}
-              />
-              <button style={styles.navSearchBtn} aria-label="Search">
-                🔎
-              </button>
-            </form>
-          </div>
-        </nav>
-
-        {/* City subnav */}
-        <div style={styles.subnav}>
-          {[
-            "New York",
-            "Los Angeles",
-            "Boston",
-            "Miami",
-            "Houston",
-            "San Francisco",
-            "Chicago",
-            "Las Vegas",
-          ].map((c) => (
-            <Link
-              key={c}
-              href={`/search?q=${encodeURIComponent(c)}`}
-              style={styles.subnavLink}
-            >
-              {c}
-            </Link>
-          ))}
-        </div>
-      </header>
 
       {/* Hero */}
       <section style={styles.hero}>
