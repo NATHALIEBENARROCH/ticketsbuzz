@@ -8,6 +8,11 @@ type EventItem = {
   DisplayDate?: string;
   ParentCategoryID?: number;
   MapURL?: string;
+
+  // optional ticket links (if your API provides them)
+  TicketURL?: string;
+  ExternalURL?: string;
+  Url?: string;
 };
 
 export default async function CategoryPage({
@@ -15,7 +20,7 @@ export default async function CategoryPage({
 }: {
   params: Promise<{ parentId: string }>;
 }) {
-  const { parentId } = await params; // important in your Next version
+  const { parentId } = await params;
   const parentIdNum = Number(parentId);
 
   const res = await fetch("http://localhost:3000/api/events", {
@@ -55,80 +60,113 @@ export default async function CategoryPage({
         {filtered.length === 0 ? (
           <p>No events in this category.</p>
         ) : (
-          filtered.slice(0, 50).map((event) => (
-            <div
-              key={event.ID}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: 10,
-                padding: 16,
-                marginBottom: 14,
-                display: "flex",
-                gap: 16,
-                alignItems: "flex-start",
-                background: "#fff",
-              }}
-            >
-              {/* Seat map preview (optional) */}
-              {event.MapURL ? (
-                <img
-                  src={event.MapURL}
-                  alt="Seat map"
-                  style={{
-                    width: 120,
-                    borderRadius: 6,
-                    opacity: 0.9,
-                    flexShrink: 0,
-                    border: "1px solid #eee",
-                  }}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: 120,
-                    height: 80,
-                    borderRadius: 6,
-                    background: "#f3f3f3",
-                    border: "1px solid #eee",
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#777",
-                    fontSize: 12,
-                  }}
-                >
-                  No map
-                </div>
-              )}
+          filtered.slice(0, 50).map((event) => {
+            const ticketLink =
+              event.TicketURL || event.ExternalURL || event.Url || "";
 
-              {/* Event info */}
-              <div>
-                <div style={{ fontSize: 18, fontWeight: 700 }}>
-                  {event.Name}
-                </div>
-
-                <div style={{ color: "#555", marginTop: 4 }}>
-                  {event.City}
-                  {event.City && event.Venue ? " • " : ""}
-                  {event.Venue}
-                </div>
-
-                <div style={{ color: "#777", marginTop: 6 }}>
-                  {event.DisplayDate}
-                </div>
-
-                <div style={{ marginTop: 10 }}>
-                  <Link
-                    href={`/event/${event.ID}`}
-                    style={{ textDecoration: "underline" }}
+            return (
+              <div
+                key={event.ID}
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: 10,
+                  padding: 16,
+                  marginBottom: 14,
+                  display: "flex",
+                  gap: 16,
+                  alignItems: "flex-start",
+                  background: "#fff",
+                }}
+              >
+                {/* Seat map preview (optional) */}
+                {event.MapURL ? (
+                  <img
+                    src={event.MapURL}
+                    alt="Seat map"
+                    style={{
+                      width: 120,
+                      borderRadius: 6,
+                      opacity: 0.9,
+                      flexShrink: 0,
+                      border: "1px solid #eee",
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 120,
+                      height: 80,
+                      borderRadius: 6,
+                      background: "#f3f3f3",
+                      border: "1px solid #eee",
+                      flexShrink: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#777",
+                      fontSize: 12,
+                    }}
                   >
-                    View details
-                  </Link>
+                    No map
+                  </div>
+                )}
+
+                {/* Event info */}
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 700 }}>
+                    {event.Name}
+                  </div>
+
+                  <div style={{ color: "#555", marginTop: 4 }}>
+                    {event.City}
+                    {event.City && event.Venue ? " • " : ""}
+                    {event.Venue}
+                  </div>
+
+                  <div style={{ color: "#777", marginTop: 6 }}>
+                    {event.DisplayDate}
+                  </div>
+
+                  {/* Actions */}
+                  <div
+                    style={{
+                      marginTop: 10,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <Link
+                      href={`/event/${event.ID}`}
+                      style={{ textDecoration: "underline" }}
+                    >
+                      View details
+                    </Link>
+
+                    {ticketLink ? (
+                      <a
+                        href={ticketLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          padding: "6px 10px",
+                          background: "#111",
+                          color: "#fff",
+                          borderRadius: 6,
+                          textDecoration: "none",
+                          fontSize: 13,
+                          fontWeight: 700,
+                        }}
+                      >
+                        Buy
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </main>
