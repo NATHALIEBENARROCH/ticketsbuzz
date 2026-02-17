@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { baseUrl } from "@/lib/api";
 
 type EventItem = {
   id?: string | number;
@@ -16,8 +17,9 @@ export default async function SearchPage({
 }) {
   const q = (searchParams?.q ?? "").trim();
 
-  // ✅ Use env var (no headers() / no relative URL issues)
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/events?q=${encodeURIComponent(q)}`, {
+    cache: "no-store",
+  });
 
   let events: EventItem[] = [];
   let errorMsg = "";

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { baseUrl } from "@/lib/api";
 
 type EventItem = {
   ID: number;
@@ -8,10 +9,9 @@ type EventItem = {
   Venue?: string;
   DisplayDate?: string;
 
-  MapURL?: string; // seat map image
+  MapURL?: string;
   InteractiveMapURL?: string;
 
-  // if your API later provides these, they’ll show automatically
   TicketURL?: string;
   ExternalURL?: string;
   Url?: string;
@@ -23,33 +23,29 @@ export default async function EventPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const eventId = Number(id);
 
-  const res = await fetch("http://localhost:3000/api/events", {
-    cache: "no-store",
-  });
+  // ✅ IMPORTANT: event details must call /api/event/:id (singular)
+  const res = await fetch(`${baseUrl}/api/event/${id}`, { cache: "no-store" });
 
   if (!res.ok) {
     return (
       <main style={{ padding: 40, fontFamily: "Arial" }}>
-        <h1 style={{ fontSize: 28 }}>Event</h1>
-        <p style={{ color: "#b00020" }}>
-          Failed to load events (HTTP {res.status})
-        </p>
+        <h1 style={{ fontSize: 28 }}>Event not available</h1>
+        <p style={{ color: "#b00020" }}>HTTP {res.status}</p>
         <Link href="/events">← Back to events</Link>
       </main>
     );
   }
 
+  // ✅ THIS is the part you asked about:
+  // API returns: { result: event }
   const data = await res.json();
-  const events: EventItem[] = data?.result ?? [];
-
-  const event = events.find((e) => Number(e.ID) === eventId);
+  const event: EventItem | null = data?.result ?? null;
 
   if (!event) {
     return (
       <main style={{ padding: 40, fontFamily: "Arial" }}>
-        <h1 style={{ fontSize: 28 }}>Event not found</h1>
+        <h1 style={{ fontSize: 28 }}>Event not available</h1>
         <Link href="/events">← Back to events</Link>
       </main>
     );
@@ -86,7 +82,6 @@ export default async function EventPage({
         🗓 {event.DisplayDate}
       </div>
 
-      {/* Seat map */}
       <section style={{ marginTop: 20 }}>
         <h2 style={{ fontSize: 18, marginBottom: 10 }}>Seat map</h2>
 
@@ -120,7 +115,6 @@ export default async function EventPage({
         ) : null}
       </section>
 
-      {/* Actions */}
       <section
         style={{ marginTop: 26, display: "flex", gap: 12, flexWrap: "wrap" }}
       >

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { baseUrl } from "@/lib/api";
 
 type EventItem = {
   ID: number;
@@ -9,7 +10,6 @@ type EventItem = {
   ParentCategoryID?: number;
   MapURL?: string;
 
-  // optional ticket links (if your API provides them)
   TicketURL?: string;
   ExternalURL?: string;
   Url?: string;
@@ -18,12 +18,12 @@ type EventItem = {
 export default async function CategoryPage({
   params,
 }: {
-  params: Promise<{ parentId: string }>;
+  params: { parentId: string };
 }) {
-  const { parentId } = await params;
+  const { parentId } = params;
   const parentIdNum = Number(parentId);
 
-  const res = await fetch("http://localhost:3000/api/events", {
+  const res = await fetch(`${baseUrl}/api/events`, {
     cache: "no-store",
   });
 
@@ -78,7 +78,6 @@ export default async function CategoryPage({
                   background: "#fff",
                 }}
               >
-                {/* Seat map preview (optional) */}
                 {event.MapURL ? (
                   <img
                     src={event.MapURL}
@@ -111,7 +110,6 @@ export default async function CategoryPage({
                   </div>
                 )}
 
-                {/* Event info */}
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 18, fontWeight: 700 }}>
                     {event.Name}
@@ -127,7 +125,6 @@ export default async function CategoryPage({
                     {event.DisplayDate}
                   </div>
 
-                  {/* Actions */}
                   <div
                     style={{
                       marginTop: 10,

@@ -1,29 +1,62 @@
 import Link from "next/link";
+import { baseUrl } from "@/lib/api";
+
+type EventItem = {
+  ID: number;
+  Name?: string;
+  City?: string;
+  StateProvince?: string;
+  Venue?: string;
+  DisplayDate?: string;
+  ParentCategoryID?: number;
+
+  MapURL?: string;
+
+  TicketURL?: string;
+  ExternalURL?: string;
+  Url?: string;
+};
 
 export default async function EventsPage() {
-  const res = await fetch("http://localhost:3000/api/events", {
-    cache: "no-store",
-  });
+  const res = await fetch(`${baseUrl}/api/events`, { cache: "no-store" });
+
+  if (!res.ok) {
+    return (
+      <main style={{ padding: 40, fontFamily: "Arial" }}>
+        <h1 style={{ fontSize: 32, marginBottom: 10 }}>All Events</h1>
+        <p style={{ color: "#b00020" }}>
+          Failed to load events (HTTP {res.status})
+        </p>
+        <Link href="/">← Back home</Link>
+      </main>
+    );
+  }
 
   const data = await res.json();
-  const events = data.result || [];
-  const parentIds = Array.from(
-    new Set(events.map((e: any) => e.ParentCategoryID)),
-  ).sort();
-  console.log("ParentCategoryIDs in this response:", parentIds);
+  const events: EventItem[] = data?.result ?? [];
+
+  if (events.length === 0) {
+    return (
+      <main style={{ padding: 40, fontFamily: "Arial" }}>
+        <h1 style={{ fontSize: 32, marginBottom: 10 }}>All Events</h1>
+        <p>No events available right now.</p>
+        <Link href="/">← Back home</Link>
+      </main>
+    );
+  }
 
   return (
-    <main style={{ padding: "40px" }}>
+    <main style={{ padding: 40, fontFamily: "Arial" }}>
       <h1 style={{ fontSize: "32px", marginBottom: "20px" }}>All Events</h1>
 
-      {events.length === 0 && <p>No events found.</p>}
       <div style={{ marginBottom: 30 }}>
-        <a href="/events/1">Category 1</a> | <a href="/events/2">Category 2</a>{" "}
-        | <a href="/events/3">Category 3</a>
+        <Link href="/events/2">Concerts</Link> |{" "}
+        <Link href="/events/1">Sports</Link> |{" "}
+        <Link href="/events/3">Theater</Link>
       </div>
 
-      <ul>
-        {events.map((event: any) => (
+      <ul style={{ listStyle: "none", padding: 0 }}>
+        {events.slice(0, 100).map((event) => (
           <li
             key={event.ID}
             style={{
@@ -34,33 +67,24 @@ export default async function EventsPage() {
               background: "#fff",
             }}
           >
-            <h3 style={{ marginBottom: 6 }}>{event.Name}</h3>
+            <h3 style={{ marginBottom: 6 }}>
+              {event.Name ?? "Untitled event"}
+            </h3>
 
-            <p style={{ fontWeight: "500" }}>📍 {event.Venue}</p>
-
-            <p style={{ color: "#555" }}>
-              {event.City}, {event.StateProvince}
+            <p style={{ fontWeight: "500", margin: "6px 0" }}>
+              📍 {event.Venue ?? ""}
             </p>
 
-            <p style={{ color: "#777" }}>🗓 {event.DisplayDate}</p>
+            <p style={{ color: "#555", margin: "6px 0" }}>
+              {event.City ?? ""}
+              {event.City && event.StateProvince ? ", " : ""}
+              {event.StateProvince ?? ""}
+            </p>
 
-            {event.IsWomensEvent && (
-              <span
-                style={{
-                  display: "inline-block",
-                  marginTop: 8,
-                  padding: "4px 8px",
-                  background: "#fde2e2",
-                  color: "#b00020",
-                  fontSize: "12px",
-                  borderRadius: "6px",
-                }}
-              >
-                Women’s Event
-              </span>
-            )}
+            <p style={{ color: "#777", margin: "6px 0" }}>
+              🗓 {event.DisplayDate ?? ""}
+            </p>
 
-            {/* 👇 View Details link */}
             <div style={{ marginTop: 12 }}>
               <Link
                 href={`/event/${event.ID}`}

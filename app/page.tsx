@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main style={{ fontFamily: "Arial", margin: 0 }}>
-      {/* Top nav */}
+    <main style={styles.page}>
+      {/* Global header */}
 
       {/* Hero */}
       <section style={styles.hero}>
@@ -15,10 +15,14 @@ export default function Home() {
           <form action="/search" style={styles.heroSearch}>
             <input
               name="q"
+              required
+              autoFocus
               placeholder="Search for events, artist, teams or venues"
               style={styles.heroSearchInput}
             />
-            <button style={styles.heroSearchBtn}>Search</button>
+            <button type="submit" style={styles.heroSearchBtn}>
+              Search
+            </button>
           </form>
 
           <div style={styles.heroCtas}>
@@ -35,23 +39,25 @@ export default function Home() {
       {/* Categories */}
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>Browse by Category</h2>
+
+        {/* ✅ Transition + hover comes from globals.css (see note below) */}
         <div style={styles.grid}>
-          <Link href="/events/2" style={styles.card}>
+          <Link href="/events/2" className="tb-card" style={styles.card}>
             <h3 style={styles.cardTitle}>🎵 Music</h3>
             <p style={styles.cardText}>Concerts & tours</p>
           </Link>
 
-          <Link href="/events/1" style={styles.card}>
+          <Link href="/events/1" className="tb-card" style={styles.card}>
             <h3 style={styles.cardTitle}>🏀 Sports</h3>
             <p style={styles.cardText}>Games & matches</p>
           </Link>
 
-          <Link href="/events/3" style={styles.card}>
+          <Link href="/events/3" className="tb-card" style={styles.card}>
             <h3 style={styles.cardTitle}>🎭 Theater</h3>
             <p style={styles.cardText}>Shows & performances</p>
           </Link>
 
-          <Link href="/events" style={styles.card}>
+          <Link href="/events" className="tb-card" style={styles.card}>
             <h3 style={styles.cardTitle}>⭐ All Events</h3>
             <p style={styles.cardText}>Browse everything</p>
           </Link>
@@ -61,91 +67,10 @@ export default function Home() {
   );
 }
 
-/* ================= STYLES ================= */
-
 const styles: Record<string, React.CSSProperties> = {
-  header: {
-    background: "#1f2a5a",
-    color: "#fff",
-  },
-
-  nav: {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "14px 18px",
-    display: "grid",
-    gridTemplateColumns: "1fr auto 1fr",
-    alignItems: "center",
-    gap: 16,
-  },
-
-  navLeft: {
-    display: "flex",
-    gap: 18,
-    alignItems: "center",
-  },
-
-  navCenter: {
-    display: "flex",
-    justifyContent: "center",
-  },
-
-  navRight: {
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-
-  navLink: {
-    color: "#fff",
-    textDecoration: "none",
-    fontWeight: 700,
-    fontSize: 15,
-  },
-
-  navLogo: {
-    height: 54, // bigger logo
-    objectFit: "contain",
-    cursor: "pointer",
-  },
-
-  navSearch: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-  },
-
-  navSearchInput: {
-    padding: "8px 10px",
-    borderRadius: 18,
-    border: "1px solid rgba(255,255,255,0.25)",
-    background: "rgba(255,255,255,0.12)",
-    color: "#fff",
-    width: 220,
-    outline: "none",
-  },
-
-  navSearchBtn: {
-    border: "none",
-    background: "transparent",
-    color: "#fff",
-    cursor: "pointer",
-    fontSize: 16,
-  },
-
-  subnav: {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "8px 18px 14px",
-    display: "flex",
-    gap: 18,
-    flexWrap: "wrap",
-    color: "rgba(255,255,255,0.85)",
-  },
-
-  subnavLink: {
-    color: "rgba(255,255,255,0.85)",
-    textDecoration: "none",
-    fontSize: 13,
+  page: {
+    fontFamily: "Arial",
+    margin: 0,
   },
 
   hero: {
@@ -186,7 +111,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     gap: 10,
     width: "min(720px, 92vw)",
-    marginTop: 10,
+    marginTop: 14, // lowered a touch
   },
 
   heroSearchInput: {
@@ -249,15 +174,11 @@ const styles: Record<string, React.CSSProperties> = {
     display: "block",
     padding: 20,
     borderRadius: 14,
-
     background: "linear-gradient(180deg, #1f2a5a, #0b0f24)",
-
     color: "#fff",
     textDecoration: "none",
-
     border: "1px solid rgba(255,255,255,0.08)",
-
-    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+    transition: "transform 0.18s ease, box-shadow 0.18s ease",
   },
 
   cardTitle: {
