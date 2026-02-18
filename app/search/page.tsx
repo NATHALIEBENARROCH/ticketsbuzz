@@ -3,11 +3,16 @@ import { baseUrl } from "@/lib/api";
 
 type EventItem = {
   id?: string | number;
+  ID?: string | number;
   name?: string;
+  Name?: string;
   eventName?: string;
   venueName?: string;
+  Venue?: string;
   city?: string;
+  City?: string;
   date?: string;
+  DisplayDate?: string;
 };
 
 export default async function SearchPage({
@@ -16,12 +21,7 @@ export default async function SearchPage({
   searchParams: { q?: string };
 }) {
   const q = (searchParams?.q ?? "").trim();
-
-  const res = await fetch(`${baseUrl}/api/events?q=${encodeURIComponent(q)}`, {
-    cache: "no-store",
-  });
-
-  let events: any[] = [];
+  let events: EventItem[] = [];
   let errorMsg = "";
 
   try {
@@ -34,9 +34,11 @@ export default async function SearchPage({
       if (!res.ok) {
         errorMsg = `Couldn’t load events (HTTP ${res.status}).`;
       } else {
-        const data = await res.json();
-        // ton route.ts retourne { result: [] } (ou data direct). On gère les 2 cas:
-        events = data?.result ?? data?.events ?? [];
+        const data = (await res.json()) as {
+          result?: EventItem[];
+          events?: EventItem[];
+        };
+        events = data.result ?? data.events ?? [];
       }
     }
   } catch (e) {
@@ -97,7 +99,7 @@ export default async function SearchPage({
                   {date}
                 </div>
 
-                {e.id != null && (
+                {id != null && (
                   <div style={{ marginTop: 10 }}>
                     <Link href={`/event/${id}`} style={styles.cardLink}>
                       View event →
