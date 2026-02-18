@@ -51,7 +51,8 @@ export default async function EventPage({
     );
   }
 
-  const ticketLink = event.TicketURL || event.ExternalURL || event.Url || "";
+  const wcid = process.env.TN_WCID || "";
+  const ticketLink = `https://www.ticketnetwork.com/tickets/${event.ID}?wcid=${wcid}`;
 
   const venueQuery = [event.Venue, event.City, event.StateProvince]
     .filter(Boolean)
