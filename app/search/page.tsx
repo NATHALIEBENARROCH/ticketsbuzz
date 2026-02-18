@@ -21,21 +21,22 @@ export default async function SearchPage({
     cache: "no-store",
   });
 
-  let events: EventItem[] = [];
+  let events: any[] = [];
   let errorMsg = "";
 
   try {
     if (q) {
       const res = await fetch(
-        `${baseUrl}/api/events?q=${encodeURIComponent(q)}`,
+        `${baseUrl}/api/search?q=${encodeURIComponent(q)}`,
         { cache: "no-store" },
       );
 
       if (!res.ok) {
         errorMsg = `Couldn’t load events (HTTP ${res.status}).`;
       } else {
-        const data = (await res.json()) as { events?: EventItem[] };
-        events = data.events ?? [];
+        const data = await res.json();
+        // ton route.ts retourne { result: [] } (ou data direct). On gère les 2 cas:
+        events = data?.result ?? data?.events ?? [];
       }
     }
   } catch (e) {
@@ -79,11 +80,11 @@ export default async function SearchPage({
       {q && !errorMsg && (
         <div style={styles.grid}>
           {events.map((e, idx) => {
-            const title = e.name ?? e.eventName ?? "Untitled event";
-            const venue = e.venueName ?? "";
-            const city = e.city ?? "";
-            const date = e.date ?? "";
-            const id = e.id ?? idx;
+            const title = e.Name ?? e.name ?? e.eventName ?? "Untitled event";
+            const venue = e.Venue ?? e.venueName ?? "";
+            const city = e.City ?? e.city ?? "";
+            const date = e.DisplayDate ?? e.date ?? "";
+            const id = e.ID ?? e.id ?? idx;
 
             return (
               <div key={String(id)} style={styles.card}>
@@ -98,7 +99,7 @@ export default async function SearchPage({
 
                 {e.id != null && (
                   <div style={{ marginTop: 10 }}>
-                    <Link href={`/event/${e.id}`} style={styles.cardLink}>
+                    <Link href={`/event/${id}`} style={styles.cardLink}>
                       View event →
                     </Link>
                   </div>
