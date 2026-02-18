@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { baseUrl } from "@/lib/api";
+import { notFound } from "next/navigation";
 
 type EventItem = {
   ID: number;
@@ -20,8 +21,8 @@ export default async function CategoryPage({
 }: {
   params: { parentId: string };
 }) {
-  const { parentId } = params;
-  const parentIdNum = Number(parentId);
+  const parentId = Number(params.parentId);
+  if (!Number.isFinite(parentId)) return notFound();
 
   const res = await fetch(`${baseUrl}/api/events`, {
     cache: "no-store",
@@ -31,7 +32,7 @@ export default async function CategoryPage({
     return (
       <main style={{ padding: 40, fontFamily: "Arial" }}>
         <h1 style={{ fontSize: 40, marginBottom: 10 }}>
-          Category {Number.isFinite(parentIdNum) ? parentIdNum : parentId}
+          Category {Number.isFinite(parentId) ? parentId : parentId}
         </h1>
         <p style={{ color: "#b00020" }}>
           Failed to load events (HTTP {res.status})
@@ -45,12 +46,12 @@ export default async function CategoryPage({
   const events: EventItem[] = data?.result ?? [];
 
   const filtered = events.filter(
-    (e) => Number(e.ParentCategoryID) === parentIdNum,
+    (e) => Number(e.ParentCategoryID) === parentId,
   );
 
   return (
     <main style={{ padding: 40, fontFamily: "Arial" }}>
-      <h1 style={{ fontSize: 40, marginBottom: 10 }}>Category {parentIdNum}</h1>
+      <h1 style={{ fontSize: 40, marginBottom: 10 }}>Category {parentId}</h1>
 
       <div style={{ marginBottom: 18 }}>
         <Link href="/events">← Back to all events</Link>
