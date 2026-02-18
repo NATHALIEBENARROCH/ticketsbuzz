@@ -11,16 +11,16 @@ type HeaderProps = {
 export default function Header({ defaultQuery = "" }: HeaderProps) {
   const [q, setQ] = useState(defaultQuery);
 
-  const cities = [
-    "New York",
-    "Los Angeles",
-    "Boston",
-    "Miami",
-    "Houston",
-    "San Francisco",
-    "Chicago",
-    "Las Vegas",
-  ];
+  // const cities = [
+  //   "New York",
+  //   "Los Angeles",
+  //   "Boston",
+  //   "Miami",
+  //   "Houston",
+  //   "San Francisco",
+  //   "Chicago",
+  //   "Las Vegas",
+  // ];
 
   return (
     <header style={styles.header}>
@@ -63,7 +63,7 @@ export default function Header({ defaultQuery = "" }: HeaderProps) {
         </div>
       </nav>
 
-      <div style={styles.subnav}>
+      {/* <div style={styles.subnav}>
         {cities.map((c) => (
           <Link
             key={c}
@@ -73,7 +73,7 @@ export default function Header({ defaultQuery = "" }: HeaderProps) {
             {c}
           </Link>
         ))}
-      </div>
+      </div> */}
     </header>
   );
 }
