@@ -1,4 +1,5 @@
 import { getEvents } from "@/lib/soapClient";
+import { corsPreflight, withCorsJson } from "@/lib/cors";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,38 +12,30 @@ function normalizeEvents(resultValue) {
   return [];
 }
 
-export async function GET(_request, ctx) {
-  // ✅ In your Next setup, params is a Promise
+export async function GET(request, ctx) {
   const { id } = await ctx.params;
 
   const eventId = Number.parseInt(id, 10);
   if (!id || Number.isNaN(eventId)) {
-    return Response.json(
-      { error: "Invalid event id", got: id },
-      { status: 400 },
-    );
+    return withCorsJson({ error: "Invalid event id", got: id }, request, { status: 400 });
   }
 
   try {
     const result = await getEvents({ eventID: eventId, numberOfEvents: 1 });
-
-    // Your soapClient result structure:
     const events = normalizeEvents(result?.parsed?.result);
     const event = events[0] ?? null;
 
     if (!event) {
-      return Response.json(
-        { error: "Event not found", parseError: result?.parseError },
-        { status: 404 },
-      );
+      return withCorsJson({ error: "Event not found", parseError: result?.parseError }, request, { status: 404 });
     }
 
-    return Response.json({ result: event });
+    return withCorsJson({ result: event }, request);
   } catch (error) {
     console.error("Error in /api/event/[id]:", error);
-    return Response.json(
-      { error: error?.message || "Server error" },
-      { status: 500 },
-    );
+    return withCorsJson({ error: error?.message || "Server error" }, request, { status: 500 });
   }
+}
+
+export async function OPTIONS(request) {
+  return corsPreflight(request);
 }

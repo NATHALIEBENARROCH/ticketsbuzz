@@ -1,4 +1,5 @@
 import { getEvents } from "@/lib/soapClient";
+import { corsPreflight, withCorsJson } from "@/lib/cors";
 
 function normalizeEvents(resultValue) {
   if (!resultValue || resultValue === "") return [];
@@ -17,13 +18,17 @@ export async function GET(request) {
     const result = await getEvents({ eventName: query, numberOfEvents: 50 });
     const events = normalizeEvents(result.parsed?.result);
 
-    return Response.json({
+    return withCorsJson({
       result: events,
       count: events.length,
       parseError: result.parseError,
-    });
+    }, request);
   } catch (error) {
     console.error("Error en /api/search:", error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return withCorsJson({ error: error.message }, request, { status: 500 });
   }
+}
+
+export async function OPTIONS(request) {
+  return corsPreflight(request);
 }
