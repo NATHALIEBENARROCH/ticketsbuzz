@@ -12,10 +12,18 @@ function normalizeEvents(resultValue) {
 export async function GET(request) {
   // leer parámetro q de la URL
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get("q") || "";
+  const query = (searchParams.get("q") || "").trim();
+
+  if (!query) {
+    return withCorsJson({ result: [], count: 0, parseError: null }, request);
+  }
 
   try {
-    const result = await getEvents({ eventName: query, numberOfEvents: 50 });
+    const result = await getEvents({
+      eventName: query,
+      performerName: query,
+      numberOfEvents: 20,
+    });
     const events = normalizeEvents(result.parsed?.result);
 
     return withCorsJson({
