@@ -9,6 +9,19 @@ function normalizeEvents(resultValue) {
   return [];
 }
 
+function toEventTimestamp(event) {
+  const rawDate = event?.Date || event?.DisplayDate;
+  if (!rawDate) return Number.POSITIVE_INFINITY;
+  const parsed = Date.parse(rawDate);
+  return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed;
+}
+
+function sortEventsByDate(events) {
+  return [...events].sort((firstEvent, secondEvent) => {
+    return toEventTimestamp(firstEvent) - toEventTimestamp(secondEvent);
+  });
+}
+
 export async function GET(request) {
   // leer parámetro q de la URL
   const { searchParams } = new URL(request.url);
@@ -24,7 +37,7 @@ export async function GET(request) {
       performerName: query,
       numberOfEvents: 20,
     });
-    const events = normalizeEvents(result.parsed?.result);
+    const events = sortEventsByDate(normalizeEvents(result.parsed?.result));
 
     return withCorsJson({
       result: events,
