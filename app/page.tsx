@@ -2,6 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
+import HeroSearch from "@/app/components/HeroSearch";
 
 type EventItem = {
   ID: number;
@@ -51,18 +52,7 @@ export default async function Home() {
         <div style={styles.heroOverlay}>
           <h1 style={styles.heroTitle}>GET YOUR TICKETSBUZZ HERE!</h1>
 
-          <form action="/search" style={styles.heroSearch}>
-            <input
-              name="q"
-              required
-              autoFocus
-              placeholder="Search for events, artist, teams or venues"
-              style={styles.heroSearchInput}
-            />
-            <button type="submit" style={styles.heroSearchBtn}>
-              Search
-            </button>
-          </form>
+          <HeroSearch />
 
           <div style={styles.heroCtas}>
             <Link href="/events" style={styles.ctaSecondary}>
@@ -166,33 +156,6 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: 1,
     margin: "6px 0 16px",
     textShadow: "0 2px 16px rgba(0,0,0,0.6)",
-  },
-
-  heroSearch: {
-    display: "flex",
-    gap: 10,
-    width: "min(720px, 92vw)",
-    marginTop: 14, // lowered a touch
-  },
-
-  heroSearchInput: {
-    flex: 1,
-    padding: "14px 16px",
-    fontSize: 16,
-    borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.25)",
-    background: "rgba(255,255,255,0.92)",
-    outline: "none",
-  },
-
-  heroSearchBtn: {
-    padding: "14px 18px",
-    borderRadius: 999,
-    border: "none",
-    background: "#b11b2b",
-    color: "#fff",
-    fontWeight: 800,
-    cursor: "pointer",
   },
 
   heroCtas: {
