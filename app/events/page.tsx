@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { baseUrl } from "@/lib/api";
+import { formatEventDate } from "@/lib/dateFormat";
 
 type EventItem = {
   ID: number;
@@ -95,7 +96,7 @@ export default async function EventsPage({
             </p>
 
             <p style={{ color: "#777", margin: "6px 0" }}>
-              🗓 {event.DisplayDate ?? ""}
+              🗓 {formatEventDate(event.DisplayDate)}
             </p>
 
             <div style={{ marginTop: 12 }}>

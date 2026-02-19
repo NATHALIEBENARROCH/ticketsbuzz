@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { baseUrl } from "@/lib/api";
+import { formatEventDate } from "@/lib/dateFormat";
 import { notFound } from "next/navigation";
 
 type EventItem = {
@@ -136,7 +137,7 @@ export default async function CategoryPage({
                   </div>
 
                   <div style={{ color: "#777", marginTop: 6 }}>
-                    {event.DisplayDate}
+                    {formatEventDate(event.DisplayDate)}
                   </div>
 
                   <div

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { baseUrl } from "@/lib/api";
+import { formatEventDate } from "@/lib/dateFormat";
 
 type EventItem = {
   id?: string | number;
@@ -86,7 +87,7 @@ export default async function SearchPage({
             const title = e.Name ?? e.name ?? e.eventName ?? "Untitled event";
             const venue = e.Venue ?? e.venueName ?? "";
             const city = e.City ?? e.city ?? "";
-            const date = e.DisplayDate ?? e.date ?? "";
+            const date = formatEventDate(e.DisplayDate ?? e.date);
             const id = e.ID ?? e.id ?? idx;
 
             return (
