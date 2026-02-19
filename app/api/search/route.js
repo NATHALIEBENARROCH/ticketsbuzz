@@ -4,6 +4,20 @@ import { corsPreflight, withCorsJson } from "@/lib/cors";
 const SEARCH_CACHE_TTL_MS = Number.parseInt(process.env.SEARCH_CACHE_TTL_MS || "120000", 10);
 const SEARCH_CACHE_MAX_ITEMS = Number.parseInt(process.env.SEARCH_CACHE_MAX_ITEMS || "100", 10);
 const searchCache = new Map();
+const SEARCH_DICTIONARY = [
+  "coldplay",
+  "taylor swift",
+  "montreal canadiens",
+  "miami heat",
+  "toronto",
+  "vegas",
+  "raptors",
+  "leafs",
+  "maple leafs",
+  "concerts",
+  "sports",
+  "theater",
+];
 
 function normalizeEvents(resultValue) {
   if (!resultValue || resultValue === "") return [];
@@ -31,6 +45,55 @@ function cleanQuery(rawQuery) {
     .replace(/\b(shows?|events?|tickets?|near me|in|at)\b/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function levenshtein(first, second) {
+  const a = first.toLowerCase();
+  const b = second.toLowerCase();
+  const matrix = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+
+  for (let row = 0; row <= a.length; row += 1) matrix[row][0] = row;
+  for (let col = 0; col <= b.length; col += 1) matrix[0][col] = col;
+
+  for (let row = 1; row <= a.length; row += 1) {
+    for (let col = 1; col <= b.length; col += 1) {
+      const cost = a[row - 1] === b[col - 1] ? 0 : 1;
+      matrix[row][col] = Math.min(
+        matrix[row - 1][col] + 1,
+        matrix[row][col - 1] + 1,
+        matrix[row - 1][col - 1] + cost,
+      );
+    }
+  }
+
+  return matrix[a.length][b.length];
+}
+
+function getTypoCorrectedQuery(query) {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return null;
+
+  let bestCandidate = null;
+  let bestDistance = Number.POSITIVE_INFINITY;
+
+  for (const candidate of SEARCH_DICTIONARY) {
+    const distance = levenshtein(normalized, candidate);
+    const maxLen = Math.max(normalized.length, candidate.length);
+    const normalizedDistance = maxLen === 0 ? 0 : distance / maxLen;
+
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestCandidate = { candidate, normalizedDistance };
+    }
+  }
+
+  if (!bestCandidate) return null;
+
+  if (bestDistance <= 2 || bestCandidate.normalizedDistance <= 0.25) {
+    return bestCandidate.candidate;
+  }
+
+  return null;
 }
 
 function uniqueByEventId(events) {
@@ -140,6 +203,26 @@ export async function GET(request) {
         if (cleanedSearch.events.length > 0) {
           fallbackUsed = true;
           fallbackStrategy = "cleaned-query";
+        }
+      }
+
+      if (events.length === 0) {
+        const typoCorrected = getTypoCorrectedQuery(cleaned || query);
+
+        if (typoCorrected && typoCorrected.toLowerCase() !== query.toLowerCase()) {
+          const typoSearch = await runSearch({
+            eventName: typoCorrected,
+            performerName: typoCorrected,
+            numberOfEvents,
+          });
+
+          events = uniqueByEventId([...events, ...typoSearch.events]);
+          parseError = parseError || typoSearch.response.parseError;
+
+          if (typoSearch.events.length > 0) {
+            fallbackUsed = true;
+            fallbackStrategy = "typo-correction";
+          }
         }
       }
 
