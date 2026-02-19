@@ -14,11 +14,15 @@ type EventItem = {
 export default async function Home() {
   const requestHeaders = await headers();
   const rawDetectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
-  let detectedCity = rawDetectedCity;
-  try {
-    detectedCity = decodeURIComponent(rawDetectedCity);
-  } catch {
-    detectedCity = rawDetectedCity;
+  let detectedCity = rawDetectedCity.replace(/\+/g, " ");
+  for (let index = 0; index < 3; index += 1) {
+    try {
+      const decoded = decodeURIComponent(detectedCity);
+      if (decoded === detectedCity) break;
+      detectedCity = decoded;
+    } catch {
+      break;
+    }
   }
 
   const localizedApiUrl = detectedCity
@@ -71,14 +75,12 @@ export default async function Home() {
         </div>
       </section>
 
-      <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>
-          {detectedCity ? `Events near ${detectedCity}` : "Popular events near you"}
-        </h2>
+      {localizedEvents.length > 0 ? (
+        <section style={styles.section}>
+          <h2 style={styles.sectionTitle}>
+            {detectedCity ? `Events near ${detectedCity}` : "Popular events near you"}
+          </h2>
 
-        {localizedEvents.length === 0 ? (
-          <p style={{ opacity: 0.78 }}>No local events available right now.</p>
-        ) : (
           <div style={styles.localGrid}>
             {localizedEvents.slice(0, 6).map((event) => (
               <Link key={event.ID} href={`/event/${event.ID}`} style={styles.localCard}>
@@ -92,8 +94,8 @@ export default async function Home() {
               </Link>
             ))}
           </div>
-        )}
-      </section>
+        </section>
+      ) : null}
 
       {/* Categories */}
       <section style={styles.section}>

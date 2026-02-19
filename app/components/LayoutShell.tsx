@@ -9,7 +9,7 @@ export default function LayoutShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const showHeaderSearch = pathname !== "/";
+  const showHeaderSearch = Boolean(pathname) && pathname !== "/";
 
   return (
     <>
