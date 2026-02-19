@@ -41,6 +41,23 @@ export default async function Home() {
     localizedEvents = [];
   }
 
+  let fallbackEvents: EventItem[] = [];
+  if (localizedEvents.length === 0) {
+    try {
+      const fallbackRes = await fetch(`${baseUrl}/api/events?numberOfEvents=8`, { cache: "no-store" });
+      if (fallbackRes.ok) {
+        const data = await fallbackRes.json();
+        fallbackEvents = data?.result ?? [];
+      }
+    } catch {
+      fallbackEvents = [];
+    }
+  }
+
+  const eventsToShow = localizedEvents.length > 0 ? localizedEvents : fallbackEvents;
+  const hasLocalEvents = localizedEvents.length > 0;
+  const locationText = detectedCity || "your area";
+
   return (
     <main style={styles.page}>
       {/* Global header */}
@@ -65,14 +82,20 @@ export default async function Home() {
         </div>
       </section>
 
-      {localizedEvents.length > 0 ? (
-        <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>
-            {detectedCity ? `Events near ${detectedCity}` : "Popular events near you"}
-          </h2>
+      <section style={styles.section}>
+        <h2 style={styles.sectionTitle}>Events by your location</h2>
+        <div style={styles.locationRow}>
+          <span style={styles.locationBadge}>Location: {locationText}</span>
+          {!hasLocalEvents ? (
+            <span style={styles.locationHint}>No direct local matches, showing popular events.</span>
+          ) : null}
+        </div>
 
+        {eventsToShow.length === 0 ? (
+          <p style={styles.emptyText}>No events available right now.</p>
+        ) : (
           <div style={styles.localGrid}>
-            {localizedEvents.slice(0, 6).map((event) => (
+            {eventsToShow.slice(0, 6).map((event) => (
               <Link key={event.ID} href={`/event/${event.ID}`} style={styles.localCard}>
                 <div style={styles.localTitle}>{event.Name || "Untitled event"}</div>
                 <div style={styles.localMeta}>
@@ -84,8 +107,8 @@ export default async function Home() {
               </Link>
             ))}
           </div>
-        </section>
-      ) : null}
+        )}
+      </section>
 
       {/* Categories */}
       <section style={styles.section}>
@@ -186,6 +209,32 @@ const styles: Record<string, React.CSSProperties> = {
   sectionTitle: {
     margin: "0 0 18px",
     fontSize: 22,
+  },
+
+  locationRow: {
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 14,
+  },
+  locationBadge: {
+    display: "inline-block",
+    padding: "6px 10px",
+    borderRadius: 999,
+    background: "rgba(31,42,90,0.1)",
+    border: "1px solid rgba(31,42,90,0.25)",
+    fontSize: 13,
+    fontWeight: 700,
+    color: "#1f2a5a",
+  },
+  locationHint: {
+    fontSize: 13,
+    color: "#666",
+  },
+  emptyText: {
+    margin: 0,
+    color: "#666",
   },
 
   localGrid: {
