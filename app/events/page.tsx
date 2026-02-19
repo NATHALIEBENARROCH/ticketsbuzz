@@ -17,8 +17,21 @@ type EventItem = {
   Url?: string;
 };
 
-export default async function EventsPage() {
-  const res = await fetch(`${baseUrl}/api/events`, { cache: "no-store" });
+const PAGE_STEP = 40;
+const MAX_LIMIT = 200;
+
+export default async function EventsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ limit?: string }> | { limit?: string };
+}) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const rawLimit = Number.parseInt(resolvedSearchParams?.limit || `${PAGE_STEP}`, 10);
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(rawLimit, MAX_LIMIT)
+    : PAGE_STEP;
+
+  const res = await fetch(`${baseUrl}/api/events?numberOfEvents=${limit}`, { cache: "no-store" });
 
   if (!res.ok) {
     return (
@@ -56,7 +69,7 @@ export default async function EventsPage() {
       </div>
 
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {events.slice(0, 100).map((event) => (
+        {events.map((event) => (
           <li
             key={event.ID}
             style={{
@@ -96,6 +109,16 @@ export default async function EventsPage() {
           </li>
         ))}
       </ul>
+
+      <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
+        {events.length >= limit && limit < MAX_LIMIT ? (
+          <Link href={`/events?limit=${Math.min(limit + PAGE_STEP, MAX_LIMIT)}`}>
+            Load more
+          </Link>
+        ) : null}
+
+        {limit > PAGE_STEP ? <Link href="/events">Show less</Link> : null}
+      </div>
     </main>
   );
 }

@@ -16,14 +16,25 @@ type EventItem = {
   Url?: string;
 };
 
+const PAGE_STEP = 40;
+const MAX_LIMIT = 200;
+
 export default async function CategoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ parentId: string }> | { parentId: string };
+  searchParams?: Promise<{ limit?: string }> | { limit?: string };
 }) {
   const resolvedParams = await params;
   const parentId = Number(resolvedParams.parentId);
   if (!Number.isFinite(parentId)) return notFound();
+
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const rawLimit = Number.parseInt(resolvedSearchParams?.limit || `${PAGE_STEP}`, 10);
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(rawLimit, MAX_LIMIT)
+    : PAGE_STEP;
 
   const categoryLabelMap: Record<number, string> = {
     1: "Sports",
@@ -32,7 +43,7 @@ export default async function CategoryPage({
   };
   const categoryLabel = categoryLabelMap[parentId] || `Category ${parentId}`;
 
-  const res = await fetch(`${baseUrl}/api/events?parentCategoryID=${parentId}&numberOfEvents=120`, {
+  const res = await fetch(`${baseUrl}/api/events?parentCategoryID=${parentId}&numberOfEvents=${limit}`, {
     cache: "no-store",
   });
 
@@ -168,6 +179,16 @@ export default async function CategoryPage({
             );
           })
         )}
+
+        <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
+          {filtered.length >= limit && limit < MAX_LIMIT ? (
+            <Link href={`/events/${parentId}?limit=${Math.min(limit + PAGE_STEP, MAX_LIMIT)}`}>
+              Load more
+            </Link>
+          ) : null}
+
+          {limit > PAGE_STEP ? <Link href={`/events/${parentId}`}>Show less</Link> : null}
+        </div>
       </div>
     </main>
   );
