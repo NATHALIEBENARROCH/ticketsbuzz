@@ -18,9 +18,10 @@ type EventItem = {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }> | { q?: string };
 }) {
-  const q = (searchParams?.q ?? "").trim();
+  const resolvedSearchParams = await searchParams;
+  const q = (resolvedSearchParams?.q ?? "").trim();
   let events: EventItem[] = [];
   let errorMsg = "";
 
