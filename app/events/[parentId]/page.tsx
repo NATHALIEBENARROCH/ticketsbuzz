@@ -20,12 +20,86 @@ type EventItem = {
 const PAGE_STEP = 40;
 const MAX_LIMIT = 200;
 
+function inferSubcategory(parentId: number, name?: string) {
+  const text = (name || "").toLowerCase();
+
+  if (parentId === 1) {
+    if (/baseball|mlb/.test(text)) return "baseball";
+    if (/basketball|nba|wnba/.test(text)) return "basketball";
+    if (/football|nfl|ncaa football|cfl/.test(text)) return "football";
+    if (/hockey|nhl/.test(text)) return "hockey";
+    if (/soccer|fifa|mls|premier league/.test(text)) return "soccer";
+    if (/golf|pga|lpga/.test(text)) return "golf";
+    if (/tennis|atp|wta/.test(text)) return "tennis";
+    if (/ufc|mma|boxing|wrestling/.test(text)) return "combat";
+    return "other";
+  }
+
+  if (parentId === 2) {
+    if (/country/.test(text)) return "country";
+    if (/hip hop|rap/.test(text)) return "hip-hop";
+    if (/latin|reggaeton|banda/.test(text)) return "latin";
+    if (/jazz|blues/.test(text)) return "jazz-blues";
+    if (/classical|symphony|orchestra/.test(text)) return "classical";
+    if (/edm|dj|electronic/.test(text)) return "electronic";
+    if (/rock|metal|punk/.test(text)) return "rock";
+    return "pop-other";
+  }
+
+  if (parentId === 3) {
+    if (/broadway|musical/.test(text)) return "musicals";
+    if (/comedy|stand\-up/.test(text)) return "comedy";
+    if (/ballet|dance/.test(text)) return "dance";
+    if (/opera/.test(text)) return "opera";
+    if (/magic/.test(text)) return "magic";
+    return "plays-other";
+  }
+
+  return "other";
+}
+
+function subcategoryLabel(parentId: number, key: string) {
+  const labelMaps: Record<number, Record<string, string>> = {
+    1: {
+      baseball: "Baseball",
+      basketball: "Basketball",
+      football: "Football",
+      hockey: "Hockey",
+      soccer: "Soccer",
+      golf: "Golf",
+      tennis: "Tennis",
+      combat: "Combat Sports",
+      other: "Other Sports",
+    },
+    2: {
+      country: "Country",
+      "hip-hop": "Hip-Hop/Rap",
+      latin: "Latin",
+      "jazz-blues": "Jazz & Blues",
+      classical: "Classical",
+      electronic: "Electronic/EDM",
+      rock: "Rock/Metal",
+      "pop-other": "Pop & Other",
+    },
+    3: {
+      musicals: "Musicals",
+      comedy: "Comedy",
+      dance: "Dance",
+      opera: "Opera",
+      magic: "Magic",
+      "plays-other": "Plays & Other",
+    },
+  };
+
+  return labelMaps[parentId]?.[key] || key;
+}
+
 export default async function CategoryPage({
   params,
   searchParams,
 }: {
   params: Promise<{ parentId: string }> | { parentId: string };
-  searchParams?: Promise<{ limit?: string }> | { limit?: string };
+  searchParams?: Promise<{ limit?: string; sub?: string }> | { limit?: string; sub?: string };
 }) {
   const resolvedParams = await params;
   const parentId = Number(resolvedParams.parentId);
@@ -36,6 +110,7 @@ export default async function CategoryPage({
   const limit = Number.isFinite(rawLimit) && rawLimit > 0
     ? Math.min(rawLimit, MAX_LIMIT)
     : PAGE_STEP;
+  const activeSub = (resolvedSearchParams?.sub || "all").trim().toLowerCase();
 
   const categoryLabelMap: Record<number, string> = {
     1: "Sports",
@@ -61,7 +136,22 @@ export default async function CategoryPage({
   }
 
   const data = await res.json();
-  const filtered: EventItem[] = data?.result ?? [];
+  const events: EventItem[] = data?.result ?? [];
+
+  const subcategoryCounts = new Map<string, number>();
+  for (const event of events) {
+    const sub = inferSubcategory(parentId, event.Name);
+    subcategoryCounts.set(sub, (subcategoryCounts.get(sub) || 0) + 1);
+  }
+
+  const availableSubcategories = Array.from(subcategoryCounts.entries())
+    .sort((first, second) => second[1] - first[1])
+    .map(([key]) => key);
+
+  const filtered = activeSub === "all"
+    ? events
+    : events.filter((event) => inferSubcategory(parentId, event.Name) === activeSub);
+  const subQuery = activeSub !== "all" ? `&sub=${encodeURIComponent(activeSub)}` : "";
 
   return (
     <main style={{ padding: 40, fontFamily: "Arial" }}>
@@ -71,9 +161,26 @@ export default async function CategoryPage({
         <Link href="/events">← Back to all events</Link>
       </div>
 
+      <form method="get" style={{ marginBottom: 16, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+        <label htmlFor="sub" style={{ fontWeight: 700 }}>Subcategory</label>
+        <select id="sub" name="sub" defaultValue={activeSub} style={{ padding: "7px 10px", borderRadius: 8, border: "1px solid #ccc" }}>
+          <option value="all">All subcategories ({events.length})</option>
+          {availableSubcategories.map((sub) => (
+            <option key={sub} value={sub}>
+              {subcategoryLabel(parentId, sub)} ({subcategoryCounts.get(sub) || 0})
+            </option>
+          ))}
+        </select>
+        <input type="hidden" name="limit" value={String(limit)} />
+        <button type="submit" style={{ padding: "7px 12px", borderRadius: 8, border: "1px solid #111", background: "#111", color: "#fff", cursor: "pointer" }}>
+          Apply
+        </button>
+        {activeSub !== "all" ? <Link href={`/events/${parentId}?limit=${limit}`}>Clear filter</Link> : null}
+      </form>
+
       <div style={{ marginTop: 10 }}>
         {filtered.length === 0 ? (
-          <p>No events in this category.</p>
+          <p>No events for this subcategory.</p>
         ) : (
           filtered.slice(0, 50).map((event) => {
             const ticketLink =
@@ -182,13 +289,13 @@ export default async function CategoryPage({
         )}
 
         <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
-          {filtered.length >= limit && limit < MAX_LIMIT ? (
-            <Link href={`/events/${parentId}?limit=${Math.min(limit + PAGE_STEP, MAX_LIMIT)}`}>
+          {events.length >= limit && limit < MAX_LIMIT ? (
+            <Link href={`/events/${parentId}?limit=${Math.min(limit + PAGE_STEP, MAX_LIMIT)}${subQuery}`}>
               Load more
             </Link>
           ) : null}
 
-          {limit > PAGE_STEP ? <Link href={`/events/${parentId}`}>Show less</Link> : null}
+          {limit > PAGE_STEP ? <Link href={`/events/${parentId}?sub=${encodeURIComponent(activeSub)}`}>Show less</Link> : null}
         </div>
       </div>
     </main>

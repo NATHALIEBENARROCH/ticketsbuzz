@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type HeaderProps = {
   /** Optional: prefill the search box (ex: on /search page) */
@@ -10,6 +10,46 @@ type HeaderProps = {
 
 export default function Header({ defaultQuery = "" }: HeaderProps) {
   const [q, setQ] = useState(defaultQuery);
+  const [suggestions, setSuggestions] = useState<Array<{ ID?: string | number; Name?: string; City?: string; Venue?: string }>>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const trimmedQuery = useMemo(() => q.trim(), [q]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (trimmedQuery.length < 2) {
+      setSuggestions([]);
+      setIsLoading(false);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(trimmedQuery)}&limit=6`, {
+          cache: "no-store",
+        });
+        if (!response.ok) return;
+
+        const payload = await response.json() as {
+          result?: Array<{ ID?: string | number; Name?: string; City?: string; Venue?: string }>;
+        };
+
+        if (!isCancelled) {
+          setSuggestions(payload.result ?? []);
+          setIsOpen(true);
+        }
+      } finally {
+        if (!isCancelled) setIsLoading(false);
+      }
+    }, 250);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [trimmedQuery]);
 
   // const cities = [
   //   "New York",
@@ -44,22 +84,60 @@ export default function Header({ defaultQuery = "" }: HeaderProps) {
         </div>
 
         <div style={styles.navRight}>
-          <form action="/search" style={styles.navSearch}>
-            <input
-              name="q"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search for team or artist..."
-              style={styles.navSearchInput}
-            />
-            <button
-              style={styles.navSearchBtn}
-              aria-label="Search"
-              type="submit"
-            >
-              🔎
-            </button>
-          </form>
+          <div style={styles.searchWrapper}>
+            <form action="/search" style={styles.navSearch}>
+              <input
+                name="q"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onFocus={() => setIsOpen(true)}
+                onBlur={() => {
+                  setTimeout(() => setIsOpen(false), 120);
+                }}
+                placeholder="Search for team or artist..."
+                style={styles.navSearchInput}
+                autoComplete="off"
+              />
+              <button
+                style={styles.navSearchBtn}
+                aria-label="Search"
+                type="submit"
+              >
+                🔎
+              </button>
+            </form>
+
+            {isOpen && trimmedQuery.length >= 2 ? (
+              <div style={styles.suggestBox}>
+                {isLoading ? (
+                  <div style={styles.suggestMuted}>Searching…</div>
+                ) : suggestions.length === 0 ? (
+                  <div style={styles.suggestMuted}>No quick matches. Press search for full results.</div>
+                ) : (
+                  suggestions.map((event, idx) => {
+                    const title = event.Name || "Untitled event";
+                    const meta = [event.City, event.Venue].filter(Boolean).join(" • ");
+                    const eventId = event.ID || idx;
+
+                    return (
+                      <Link
+                        key={`${eventId}-${idx}`}
+                        href={`/event/${eventId}`}
+                        style={styles.suggestItem}
+                      >
+                        <div style={styles.suggestTitle}>{title}</div>
+                        <div style={styles.suggestMeta}>{meta}</div>
+                      </Link>
+                    );
+                  })
+                )}
+
+                <Link href={`/search?q=${encodeURIComponent(trimmedQuery)}`} style={styles.suggestSeeAll}>
+                  View all results for "{trimmedQuery}"
+                </Link>
+              </div>
+            ) : null}
+          </div>
         </div>
       </nav>
 
@@ -99,6 +177,10 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "flex-end",
     alignItems: "center",
   },
+  searchWrapper: {
+    position: "relative",
+    width: 300,
+  },
 
   navLink: {
     color: "#fff",
@@ -131,6 +213,49 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#fff",
     cursor: "pointer",
     fontSize: 16,
+  },
+  suggestBox: {
+    position: "absolute",
+    top: "calc(100% + 8px)",
+    right: 0,
+    width: "100%",
+    background: "#fff",
+    color: "#111",
+    borderRadius: 12,
+    border: "1px solid rgba(17,17,17,0.1)",
+    boxShadow: "0 14px 32px rgba(0,0,0,0.18)",
+    overflow: "hidden",
+    zIndex: 50,
+  },
+  suggestItem: {
+    display: "block",
+    padding: "10px 12px",
+    textDecoration: "none",
+    color: "#111",
+    borderBottom: "1px solid #f1f1f1",
+  },
+  suggestTitle: {
+    fontWeight: 700,
+    fontSize: 14,
+    lineHeight: 1.25,
+  },
+  suggestMeta: {
+    marginTop: 2,
+    color: "#666",
+    fontSize: 12,
+  },
+  suggestMuted: {
+    padding: "12px",
+    color: "#666",
+    fontSize: 13,
+  },
+  suggestSeeAll: {
+    display: "block",
+    padding: "10px 12px",
+    textDecoration: "none",
+    fontWeight: 700,
+    color: "#1f2a5a",
+    background: "#f8f9fc",
   },
 
   subnav: {

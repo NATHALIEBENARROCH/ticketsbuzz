@@ -1,6 +1,35 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+import { baseUrl } from "@/lib/api";
+import { formatEventDate } from "@/lib/dateFormat";
 
-export default function Home() {
+type EventItem = {
+  ID: number;
+  Name?: string;
+  City?: string;
+  Venue?: string;
+  DisplayDate?: string;
+};
+
+export default async function Home() {
+  const requestHeaders = await headers();
+  const detectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
+
+  const localizedApiUrl = detectedCity
+    ? `${baseUrl}/api/events?numberOfEvents=8&city=${encodeURIComponent(detectedCity)}`
+    : `${baseUrl}/api/events?numberOfEvents=8`;
+
+  let localizedEvents: EventItem[] = [];
+  try {
+    const localizedRes = await fetch(localizedApiUrl, { cache: "no-store" });
+    if (localizedRes.ok) {
+      const data = await localizedRes.json();
+      localizedEvents = data?.result ?? [];
+    }
+  } catch {
+    localizedEvents = [];
+  }
+
   return (
     <main style={styles.page}>
       {/* Global header */}
@@ -12,20 +41,14 @@ export default function Home() {
         <div style={styles.heroOverlay}>
           <h1 style={styles.heroTitle}>GET YOUR TICKETSBUZZ HERE!</h1>
 
-          <form action="/search" style={styles.heroSearch}>
-            <input
-              name="q"
-              required
-              autoFocus
-              placeholder="Search for events, artist, teams or venues"
-              style={styles.heroSearchInput}
-            />
-            <button type="submit" style={styles.heroSearchBtn}>
-              Search
-            </button>
-          </form>
+          <p style={styles.heroSubtitle}>
+            Discover verified tickets for sports, concerts and theater.
+          </p>
 
           <div style={styles.heroCtas}>
+            <Link href="/search?q=" style={styles.ctaPrimary}>
+              Start searching
+            </Link>
             <Link href="/events" style={styles.ctaSecondary}>
               Browse all events
             </Link>
@@ -34,6 +57,30 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </section>
+
+      <section style={styles.section}>
+        <h2 style={styles.sectionTitle}>
+          {detectedCity ? `Events near ${detectedCity}` : "Popular events near you"}
+        </h2>
+
+        {localizedEvents.length === 0 ? (
+          <p style={{ opacity: 0.78 }}>No local events available right now.</p>
+        ) : (
+          <div style={styles.localGrid}>
+            {localizedEvents.slice(0, 6).map((event) => (
+              <Link key={event.ID} href={`/event/${event.ID}`} style={styles.localCard}>
+                <div style={styles.localTitle}>{event.Name || "Untitled event"}</div>
+                <div style={styles.localMeta}>
+                  {event.City || ""}
+                  {event.City && event.Venue ? " • " : ""}
+                  {event.Venue || ""}
+                </div>
+                <div style={styles.localDate}>{formatEventDate(event.DisplayDate)}</div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Categories */}
@@ -107,6 +154,12 @@ const styles: Record<string, React.CSSProperties> = {
     textShadow: "0 2px 16px rgba(0,0,0,0.6)",
   },
 
+  heroSubtitle: {
+    color: "rgba(255,255,255,0.9)",
+    fontSize: 16,
+    margin: "0 0 8px",
+  },
+
   heroSearch: {
     display: "flex",
     gap: 10,
@@ -142,6 +195,17 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
   },
 
+  ctaPrimary: {
+    color: "#fff",
+    textDecoration: "none",
+    padding: "8px 14px",
+    borderRadius: 999,
+    border: "1px solid rgba(255,255,255,0.35)",
+    background: "#b11b2b",
+    fontSize: 13,
+    fontWeight: 800,
+  },
+
   ctaSecondary: {
     color: "#fff",
     textDecoration: "none",
@@ -162,6 +226,36 @@ const styles: Record<string, React.CSSProperties> = {
   sectionTitle: {
     margin: "0 0 18px",
     fontSize: 22,
+  },
+
+  localGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: 12,
+  },
+  localCard: {
+    display: "block",
+    textDecoration: "none",
+    color: "#111",
+    padding: 14,
+    borderRadius: 12,
+    border: "1px solid #e5e7eb",
+    background: "#fff",
+  },
+  localTitle: {
+    fontWeight: 700,
+    fontSize: 15,
+    lineHeight: 1.3,
+  },
+  localMeta: {
+    marginTop: 6,
+    color: "#555",
+    fontSize: 13,
+  },
+  localDate: {
+    marginTop: 6,
+    color: "#666",
+    fontSize: 13,
   },
 
   grid: {

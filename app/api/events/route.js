@@ -38,10 +38,14 @@ export async function GET(request) {
       ? Number.parseInt(rawChildCategoryID, 10)
       : undefined;
 
+    const rawCity = (searchParams.get("city") || "").trim();
+    const cityZip = rawCity || undefined;
+
     const result = await getEvents({
       numberOfEvents,
       parentCategoryID: Number.isFinite(parentCategoryID) ? parentCategoryID : undefined,
       childCategoryID: Number.isFinite(childCategoryID) ? childCategoryID : undefined,
+      cityZip,
     });
     const events = sortEventsByDate(normalizeEvents(result.parsed?.result));
 
