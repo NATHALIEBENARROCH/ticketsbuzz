@@ -186,6 +186,7 @@ export async function GET(request) {
     let parseError = baseSearch.response.parseError;
     let fallbackUsed = false;
     let fallbackStrategy = null;
+    let correctedQuery = null;
 
     if (events.length === 0) {
       const cleaned = cleanQuery(query);
@@ -203,6 +204,7 @@ export async function GET(request) {
         if (cleanedSearch.events.length > 0) {
           fallbackUsed = true;
           fallbackStrategy = "cleaned-query";
+          correctedQuery = cleaned;
         }
       }
 
@@ -222,6 +224,7 @@ export async function GET(request) {
           if (typoSearch.events.length > 0) {
             fallbackUsed = true;
             fallbackStrategy = "typo-correction";
+            correctedQuery = typoCorrected;
           }
         }
       }
@@ -240,6 +243,7 @@ export async function GET(request) {
         if (cityVenueSearch.events.length > 0) {
           fallbackUsed = true;
           fallbackStrategy = "city-venue";
+          correctedQuery = cleaned;
         }
       }
     }
@@ -252,6 +256,7 @@ export async function GET(request) {
       parseError,
       fallbackUsed,
       fallbackStrategy,
+      correctedQuery,
     };
 
     setCachedResult(cacheKey, payload);

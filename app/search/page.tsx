@@ -25,6 +25,8 @@ export default async function SearchPage({
   const q = (resolvedSearchParams?.q ?? "").trim();
   let events: EventItem[] = [];
   let errorMsg = "";
+  let correctedQuery = "";
+  let fallbackStrategy = "";
 
   try {
     if (q) {
@@ -39,8 +41,12 @@ export default async function SearchPage({
         const data = (await res.json()) as {
           result?: EventItem[];
           events?: EventItem[];
+          correctedQuery?: string | null;
+          fallbackStrategy?: string | null;
         };
         events = data.result ?? data.events ?? [];
+        correctedQuery = (data.correctedQuery ?? "").trim();
+        fallbackStrategy = (data.fallbackStrategy ?? "").trim();
       }
     }
   } catch (e) {
@@ -60,6 +66,20 @@ export default async function SearchPage({
       <p style={styles.meta}>
         Query: <b>{q || "(empty)"}</b> — Results: <b>{q ? events.length : 0}</b>
       </p>
+
+      {!!correctedQuery && correctedQuery.toLowerCase() !== q.toLowerCase() && (
+        <div style={{ ...styles.panel, ...styles.panelInfo }}>
+          <div style={styles.panelTitle}>Showing results for "{correctedQuery}"</div>
+          <div style={styles.panelText}>
+            We interpreted your search using <b>{fallbackStrategy || "smart matching"}</b>.
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <Link href={`/search?q=${encodeURIComponent(q)}`} style={styles.panelLink}>
+              Retry exact search for "{q}"
+            </Link>
+          </div>
+        </div>
+      )}
 
       {!q && (
         <div style={styles.panel}>
@@ -183,8 +203,18 @@ const styles: Record<string, React.CSSProperties> = {
     border: "1px solid rgba(255,90,90,0.35)",
     background: "rgba(255,90,90,0.08)",
   },
+  panelInfo: {
+    border: "1px solid rgba(116, 188, 255, 0.45)",
+    background: "rgba(116, 188, 255, 0.10)",
+    marginBottom: 14,
+  },
   panelTitle: { fontWeight: 900, marginBottom: 6 },
   panelText: { opacity: 0.85 },
+  panelLink: {
+    color: "#cde9ff",
+    textDecoration: "underline",
+    fontWeight: 700,
+  },
   code: {
     fontFamily:
       "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
