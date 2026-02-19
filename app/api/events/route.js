@@ -11,7 +11,25 @@ function normalizeEvents(resultValue) {
 
 export async function GET(request) {
   try {
-    const result = await getEvents({ numberOfEvents: 50 });
+    const { searchParams } = new URL(request.url);
+    const rawCount = Number.parseInt(searchParams.get("numberOfEvents") || "50", 10);
+    const numberOfEvents = Number.isFinite(rawCount) && rawCount > 0 ? Math.min(rawCount, 200) : 50;
+
+    const rawParentCategoryID = searchParams.get("parentCategoryID");
+    const parentCategoryID = rawParentCategoryID != null && rawParentCategoryID !== ""
+      ? Number.parseInt(rawParentCategoryID, 10)
+      : undefined;
+
+    const rawChildCategoryID = searchParams.get("childCategoryID");
+    const childCategoryID = rawChildCategoryID != null && rawChildCategoryID !== ""
+      ? Number.parseInt(rawChildCategoryID, 10)
+      : undefined;
+
+    const result = await getEvents({
+      numberOfEvents,
+      parentCategoryID: Number.isFinite(parentCategoryID) ? parentCategoryID : undefined,
+      childCategoryID: Number.isFinite(childCategoryID) ? childCategoryID : undefined,
+    });
     const events = normalizeEvents(result.parsed?.result);
 
     return withCorsJson({

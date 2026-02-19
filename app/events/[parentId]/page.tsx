@@ -25,16 +25,21 @@ export default async function CategoryPage({
   const parentId = Number(resolvedParams.parentId);
   if (!Number.isFinite(parentId)) return notFound();
 
-  const res = await fetch(`${baseUrl}/api/events`, {
+  const categoryLabelMap: Record<number, string> = {
+    1: "Sports",
+    2: "Concerts",
+    3: "Theater",
+  };
+  const categoryLabel = categoryLabelMap[parentId] || `Category ${parentId}`;
+
+  const res = await fetch(`${baseUrl}/api/events?parentCategoryID=${parentId}&numberOfEvents=120`, {
     cache: "no-store",
   });
 
   if (!res.ok) {
     return (
       <main style={{ padding: 40, fontFamily: "Arial" }}>
-        <h1 style={{ fontSize: 40, marginBottom: 10 }}>
-          Category {Number.isFinite(parentId) ? parentId : parentId}
-        </h1>
+        <h1 style={{ fontSize: 40, marginBottom: 10 }}>{categoryLabel}</h1>
         <p style={{ color: "#b00020" }}>
           Failed to load events (HTTP {res.status})
         </p>
@@ -44,15 +49,11 @@ export default async function CategoryPage({
   }
 
   const data = await res.json();
-  const events: EventItem[] = data?.result ?? [];
-
-  const filtered = events.filter(
-    (e) => Number(e.ParentCategoryID) === parentId,
-  );
+  const filtered: EventItem[] = data?.result ?? [];
 
   return (
     <main style={{ padding: 40, fontFamily: "Arial" }}>
-      <h1 style={{ fontSize: 40, marginBottom: 10 }}>Category {parentId}</h1>
+      <h1 style={{ fontSize: 40, marginBottom: 10 }}>{categoryLabel}</h1>
 
       <div style={{ marginBottom: 18 }}>
         <Link href="/events">← Back to all events</Link>
