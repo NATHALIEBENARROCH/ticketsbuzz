@@ -19,9 +19,10 @@ type EventItem = {
 export default async function CategoryPage({
   params,
 }: {
-  params: { parentId: string };
+  params: Promise<{ parentId: string }> | { parentId: string };
 }) {
-  const parentId = Number(params.parentId);
+  const resolvedParams = await params;
+  const parentId = Number(resolvedParams.parentId);
   if (!Number.isFinite(parentId)) return notFound();
 
   const res = await fetch(`${baseUrl}/api/events`, {
