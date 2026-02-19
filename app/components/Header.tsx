@@ -6,9 +6,10 @@ import { useEffect, useMemo, useState } from "react";
 type HeaderProps = {
   /** Optional: prefill the search box (ex: on /search page) */
   defaultQuery?: string;
+  showSearch?: boolean;
 };
 
-export default function Header({ defaultQuery = "" }: HeaderProps) {
+export default function Header({ defaultQuery = "", showSearch = true }: HeaderProps) {
   const [q, setQ] = useState(defaultQuery);
   const [suggestions, setSuggestions] = useState<Array<{ ID?: string | number; Name?: string; City?: string; Venue?: string }>>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -84,60 +85,62 @@ export default function Header({ defaultQuery = "" }: HeaderProps) {
         </div>
 
         <div style={styles.navRight}>
-          <div style={styles.searchWrapper}>
-            <form action="/search" style={styles.navSearch}>
-              <input
-                name="q"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                onFocus={() => setIsOpen(true)}
-                onBlur={() => {
-                  setTimeout(() => setIsOpen(false), 120);
-                }}
-                placeholder="Search for team or artist..."
-                style={styles.navSearchInput}
-                autoComplete="off"
-              />
-              <button
-                style={styles.navSearchBtn}
-                aria-label="Search"
-                type="submit"
-              >
-                🔎
-              </button>
-            </form>
+          {showSearch ? (
+            <div style={styles.searchWrapper}>
+              <form action="/search" style={styles.navSearch}>
+                <input
+                  name="q"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  onFocus={() => setIsOpen(true)}
+                  onBlur={() => {
+                    setTimeout(() => setIsOpen(false), 120);
+                  }}
+                  placeholder="Search for team or artist..."
+                  style={styles.navSearchInput}
+                  autoComplete="off"
+                />
+                <button
+                  style={styles.navSearchBtn}
+                  aria-label="Search"
+                  type="submit"
+                >
+                  🔎
+                </button>
+              </form>
 
-            {isOpen && trimmedQuery.length >= 2 ? (
-              <div style={styles.suggestBox}>
-                {isLoading ? (
-                  <div style={styles.suggestMuted}>Searching…</div>
-                ) : suggestions.length === 0 ? (
-                  <div style={styles.suggestMuted}>No quick matches. Press search for full results.</div>
-                ) : (
-                  suggestions.map((event, idx) => {
-                    const title = event.Name || "Untitled event";
-                    const meta = [event.City, event.Venue].filter(Boolean).join(" • ");
-                    const eventId = event.ID || idx;
+              {isOpen && trimmedQuery.length >= 2 ? (
+                <div style={styles.suggestBox}>
+                  {isLoading ? (
+                    <div style={styles.suggestMuted}>Searching…</div>
+                  ) : suggestions.length === 0 ? (
+                    <div style={styles.suggestMuted}>No quick matches. Press search for full results.</div>
+                  ) : (
+                    suggestions.map((event, idx) => {
+                      const title = event.Name || "Untitled event";
+                      const meta = [event.City, event.Venue].filter(Boolean).join(" • ");
+                      const eventId = event.ID || idx;
 
-                    return (
-                      <Link
-                        key={`${eventId}-${idx}`}
-                        href={`/event/${eventId}`}
-                        style={styles.suggestItem}
-                      >
-                        <div style={styles.suggestTitle}>{title}</div>
-                        <div style={styles.suggestMeta}>{meta}</div>
-                      </Link>
-                    );
-                  })
-                )}
+                      return (
+                        <Link
+                          key={`${eventId}-${idx}`}
+                          href={`/event/${eventId}`}
+                          style={styles.suggestItem}
+                        >
+                          <div style={styles.suggestTitle}>{title}</div>
+                          <div style={styles.suggestMeta}>{meta}</div>
+                        </Link>
+                      );
+                    })
+                  )}
 
-                <Link href={`/search?q=${encodeURIComponent(trimmedQuery)}`} style={styles.suggestSeeAll}>
-                  View all results for "{trimmedQuery}"
-                </Link>
-              </div>
-            ) : null}
-          </div>
+                  <Link href={`/search?q=${encodeURIComponent(trimmedQuery)}`} style={styles.suggestSeeAll}>
+                    View all results for "{trimmedQuery}"
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </nav>
 

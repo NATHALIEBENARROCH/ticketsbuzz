@@ -13,7 +13,13 @@ type EventItem = {
 
 export default async function Home() {
   const requestHeaders = await headers();
-  const detectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
+  const rawDetectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
+  let detectedCity = rawDetectedCity;
+  try {
+    detectedCity = decodeURIComponent(rawDetectedCity);
+  } catch {
+    detectedCity = rawDetectedCity;
+  }
 
   const localizedApiUrl = detectedCity
     ? `${baseUrl}/api/events?numberOfEvents=8&city=${encodeURIComponent(detectedCity)}`
@@ -41,14 +47,20 @@ export default async function Home() {
         <div style={styles.heroOverlay}>
           <h1 style={styles.heroTitle}>GET YOUR TICKETSBUZZ HERE!</h1>
 
-          <p style={styles.heroSubtitle}>
-            Discover verified tickets for sports, concerts and theater.
-          </p>
+          <form action="/search" style={styles.heroSearch}>
+            <input
+              name="q"
+              required
+              autoFocus
+              placeholder="Search for events, artist, teams or venues"
+              style={styles.heroSearchInput}
+            />
+            <button type="submit" style={styles.heroSearchBtn}>
+              Search
+            </button>
+          </form>
 
           <div style={styles.heroCtas}>
-            <Link href="/search?q=" style={styles.ctaPrimary}>
-              Start searching
-            </Link>
             <Link href="/events" style={styles.ctaSecondary}>
               Browse all events
             </Link>
@@ -154,12 +166,6 @@ const styles: Record<string, React.CSSProperties> = {
     textShadow: "0 2px 16px rgba(0,0,0,0.6)",
   },
 
-  heroSubtitle: {
-    color: "rgba(255,255,255,0.9)",
-    fontSize: 16,
-    margin: "0 0 8px",
-  },
-
   heroSearch: {
     display: "flex",
     gap: 10,
@@ -193,17 +199,6 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 12,
     flexWrap: "wrap",
     justifyContent: "center",
-  },
-
-  ctaPrimary: {
-    color: "#fff",
-    textDecoration: "none",
-    padding: "8px 14px",
-    borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.35)",
-    background: "#b11b2b",
-    fontSize: 13,
-    fontWeight: 800,
   },
 
   ctaSecondary: {
