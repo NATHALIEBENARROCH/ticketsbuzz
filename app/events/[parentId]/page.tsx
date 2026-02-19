@@ -10,6 +10,7 @@ type EventItem = {
   Venue?: string;
   DisplayDate?: string;
   ParentCategoryID?: number;
+  ChildCategoryID?: number | string;
   MapURL?: string;
 
   TicketURL?: string;
@@ -20,78 +21,51 @@ type EventItem = {
 const PAGE_STEP = 40;
 const MAX_LIMIT = 200;
 
-function inferSubcategory(parentId: number, name?: string) {
-  const text = (name || "").toLowerCase();
-
-  if (parentId === 1) {
-    if (/baseball|mlb/.test(text)) return "baseball";
-    if (/basketball|nba|wnba/.test(text)) return "basketball";
-    if (/football|nfl|ncaa football|cfl/.test(text)) return "football";
-    if (/hockey|nhl/.test(text)) return "hockey";
-    if (/soccer|fifa|mls|premier league/.test(text)) return "soccer";
-    if (/golf|pga|lpga/.test(text)) return "golf";
-    if (/tennis|atp|wta/.test(text)) return "tennis";
-    if (/ufc|mma|boxing|wrestling/.test(text)) return "combat";
-    return "other";
-  }
-
-  if (parentId === 2) {
-    if (/country/.test(text)) return "country";
-    if (/hip hop|rap/.test(text)) return "hip-hop";
-    if (/latin|reggaeton|banda/.test(text)) return "latin";
-    if (/jazz|blues/.test(text)) return "jazz-blues";
-    if (/classical|symphony|orchestra/.test(text)) return "classical";
-    if (/edm|dj|electronic/.test(text)) return "electronic";
-    if (/rock|metal|punk/.test(text)) return "rock";
-    return "pop-other";
-  }
-
-  if (parentId === 3) {
-    if (/broadway|musical/.test(text)) return "musicals";
-    if (/comedy|stand\-up/.test(text)) return "comedy";
-    if (/ballet|dance/.test(text)) return "dance";
-    if (/opera/.test(text)) return "opera";
-    if (/magic/.test(text)) return "magic";
-    return "plays-other";
-  }
-
-  return "other";
+function getChildCategoryKey(event: EventItem) {
+  const raw = event.ChildCategoryID;
+  if (raw === null || raw === undefined || raw === "") return "unknown";
+  return String(raw);
 }
 
 function subcategoryLabel(parentId: number, key: string) {
   const labelMaps: Record<number, Record<string, string>> = {
     1: {
-      baseball: "Baseball",
-      basketball: "Basketball",
-      football: "Football",
-      hockey: "Hockey",
-      soccer: "Soccer",
-      golf: "Golf",
-      tennis: "Tennis",
-      combat: "Combat Sports",
-      other: "Other Sports",
+      "63": "Baseball",
+      "65": "Football",
+      "66": "Basketball",
+      "67": "Golf",
+      "68": "Hockey",
+      "69": "Motorsports",
+      "53": "Rodeo",
+      "50": "Boxing",
+      "101": "MMA",
+      "41": "Extreme Sports",
     },
     2: {
-      country: "Country",
-      "hip-hop": "Hip-Hop/Rap",
-      latin: "Latin",
-      "jazz-blues": "Jazz & Blues",
-      classical: "Classical",
-      electronic: "Electronic/EDM",
-      rock: "Rock/Metal",
-      "pop-other": "Pop & Other",
+      "62": "Pop / Contemporary",
+      "37": "Rock",
+      "24": "Comedy / Variety",
+      "22": "Alternative",
+      "98": "Electronic",
+      "83": "Reggae",
+      "73": "International",
+      "49": "Classical / Instrumental",
+      "100": "Festivals",
     },
     3: {
-      musicals: "Musicals",
-      comedy: "Comedy",
-      dance: "Dance",
-      opera: "Opera",
-      magic: "Magic",
-      "plays-other": "Plays & Other",
+      "35": "Family / Variety",
+      "38": "Musicals",
+      "32": "Plays",
+      "75": "Opera",
+      "82": "Dance",
+      "97": "Youth Theater",
+      "60": "Ballet",
+      "104": "Operatic / Vocal",
     },
   };
 
-  return labelMaps[parentId]?.[key] || key;
+  if (key === "unknown") return "Other";
+  return labelMaps[parentId]?.[key] || `Subcategory ${key}`;
 }
 
 export default async function CategoryPage({
@@ -140,7 +114,7 @@ export default async function CategoryPage({
 
   const subcategoryCounts = new Map<string, number>();
   for (const event of events) {
-    const sub = inferSubcategory(parentId, event.Name);
+    const sub = getChildCategoryKey(event);
     subcategoryCounts.set(sub, (subcategoryCounts.get(sub) || 0) + 1);
   }
 
@@ -150,7 +124,7 @@ export default async function CategoryPage({
 
   const filtered = activeSub === "all"
     ? events
-    : events.filter((event) => inferSubcategory(parentId, event.Name) === activeSub);
+    : events.filter((event) => getChildCategoryKey(event) === activeSub);
   const subQuery = activeSub !== "all" ? `&sub=${encodeURIComponent(activeSub)}` : "";
 
   return (
@@ -163,7 +137,19 @@ export default async function CategoryPage({
 
       <form method="get" style={{ marginBottom: 16, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
         <label htmlFor="sub" style={{ fontWeight: 700 }}>Subcategory</label>
-        <select id="sub" name="sub" defaultValue={activeSub} style={{ padding: "7px 10px", borderRadius: 8, border: "1px solid #ccc" }}>
+        <select
+          id="sub"
+          name="sub"
+          defaultValue={activeSub}
+          style={{
+            padding: "7px 10px",
+            borderRadius: 8,
+            border: "1px solid #ccc",
+            background: "#111",
+            color: "#fff",
+            minWidth: 240,
+          }}
+        >
           <option value="all">All subcategories ({events.length})</option>
           {availableSubcategories.map((sub) => (
             <option key={sub} value={sub}>
