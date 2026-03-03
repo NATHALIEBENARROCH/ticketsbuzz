@@ -1,6 +1,4 @@
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const token = fs.readFileSync(new URL('../.token.tmp', import.meta.url), 'utf8').trim();
 const body = fs.readFileSync(new URL('../body.xml', import.meta.url), 'utf8');
 

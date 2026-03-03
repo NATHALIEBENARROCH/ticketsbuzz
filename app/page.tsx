@@ -3,6 +3,9 @@ import { headers } from "next/headers";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
 import HeroSearch from "@/app/components/HeroSearch";
+import AutoGeoCity from "@/app/components/AutoGeoCity";
+import EventCardImage from "@/app/components/EventCardImage";
+import GeoCarouselIndicators from "@/app/components/GeoCarouselIndicators";
 
 type EventItem = {
   ID: number;
@@ -10,52 +13,104 @@ type EventItem = {
   City?: string;
   Venue?: string;
   DisplayDate?: string;
+  MapURL?: string;
 };
 
-export default async function Home() {
-  const requestHeaders = await headers();
-  const rawDetectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
-  let detectedCity = rawDetectedCity.replace(/\+/g, " ");
+function resolveEventImageCandidates(event: EventItem) {
+  const raw = (event.MapURL || "").trim();
+  const artistName = (event.Name || "").trim();
+  const artistPhoto = artistName
+    ? `/api/artist-photo?name=${encodeURIComponent(artistName)}`
+    : "";
+
+  if (!raw) {
+    return [artistPhoto, "/hero.png"].filter(Boolean);
+  }
+
+  const normalized = raw.toLowerCase();
+  const hasGenericMapKeyword = [
+    "generaladmissionevent",
+    "seat",
+    "seating",
+    "venue",
+    "map",
+    "chart",
+    "floorplan",
+  ].some((keyword) => normalized.includes(keyword));
+
+  const secureMapUrl = raw.replace(/^http:\/\//i, "https://");
+
+  if (hasGenericMapKeyword || normalized.endsWith(".gif")) {
+    return [artistPhoto, secureMapUrl, "/hero.png"].filter(Boolean);
+  }
+
+  return [secureMapUrl, artistPhoto, "/hero.png"].filter(Boolean);
+}
+
+function normalizeCity(raw: string) {
+  let city = (raw || "").trim().replace(/\+/g, " ");
   for (let index = 0; index < 3; index += 1) {
     try {
-      const decoded = decodeURIComponent(detectedCity);
-      if (decoded === detectedCity) break;
-      detectedCity = decoded;
+      const decoded = decodeURIComponent(city);
+      if (decoded === city) break;
+      city = decoded;
     } catch {
       break;
     }
   }
+  return city;
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<{ city?: string }> | { city?: string };
+}) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const queryCity = normalizeCity(resolvedSearchParams?.city || "");
+
+  const requestHeaders = await headers();
+  const rawDetectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
+  const detectedCity = queryCity || normalizeCity(rawDetectedCity);
+  const requestHost = requestHeaders.get("host") || "";
+  const requestProto = requestHeaders.get("x-forwarded-proto") || (requestHost.includes("localhost") ? "http" : "https");
+  const currentOrigin = requestHost ? `${requestProto}://${requestHost}` : baseUrl;
+
+  async function fetchEventList(url: string) {
+    try {
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) return { events: [] as EventItem[], ok: false };
+      const data = await response.json();
+      return {
+        events: (data?.result ?? data?.events ?? []) as EventItem[],
+        ok: true,
+      };
+    } catch {
+      return { events: [] as EventItem[], ok: false };
+    }
+  }
 
   const localizedApiUrl = detectedCity
-    ? `${baseUrl}/api/events?numberOfEvents=8&city=${encodeURIComponent(detectedCity)}`
-    : `${baseUrl}/api/events?numberOfEvents=8`;
+    ? `${currentOrigin}/api/events?numberOfEvents=8&city=${encodeURIComponent(detectedCity)}`
+    : "";
 
-  let localizedEvents: EventItem[] = [];
-  try {
-    const localizedRes = await fetch(localizedApiUrl, { cache: "no-store" });
-    if (localizedRes.ok) {
-      const data = await localizedRes.json();
-      localizedEvents = data?.result ?? [];
-    }
-  } catch {
-    localizedEvents = [];
-  }
+  const localizedFetch = localizedApiUrl
+    ? await fetchEventList(localizedApiUrl)
+    : { events: [] as EventItem[], ok: true };
+  const localizedEvents = localizedFetch.events;
 
-  let fallbackEvents: EventItem[] = [];
-  if (localizedEvents.length === 0) {
-    try {
-      const fallbackRes = await fetch(`${baseUrl}/api/events?numberOfEvents=8`, { cache: "no-store" });
-      if (fallbackRes.ok) {
-        const data = await fallbackRes.json();
-        fallbackEvents = data?.result ?? [];
-      }
-    } catch {
-      fallbackEvents = [];
-    }
-  }
+  const fallbackFetch = localizedEvents.length === 0
+    ? await fetchEventList(`${currentOrigin}/api/events?numberOfEvents=8`)
+    : { events: [] as EventItem[], ok: true };
+  const fallbackEvents = fallbackFetch.events;
 
   const eventsToShow = localizedEvents.length > 0 ? localizedEvents : fallbackEvents;
+
+  const hadApiError = localizedEvents.length === 0 && fallbackEvents.length === 0
+    ? (!localizedFetch.ok && !fallbackFetch.ok)
+    : false;
   const hasLocalEvents = localizedEvents.length > 0;
+  const hasPopularFallback = localizedEvents.length === 0 && fallbackEvents.length > 0;
   const locationText = detectedCity || "your area";
 
   return (
@@ -83,30 +138,54 @@ export default async function Home() {
       </section>
 
       <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Events by your location</h2>
+        <h2 style={styles.sectionTitle}>Events in {locationText}</h2>
+        <AutoGeoCity hasCity={Boolean(detectedCity)} />
+
         <div style={styles.locationRow}>
-          <span style={styles.locationBadge}>Location: {locationText}</span>
-          {!hasLocalEvents ? (
+          <span style={styles.locationBadge}>You are in: {locationText}</span>
+          {!hasLocalEvents && !hasPopularFallback ? (
             <span style={styles.locationHint}>No direct local matches, showing popular events.</span>
+          ) : null}
+          {!hasLocalEvents && hasPopularFallback ? (
+            <span style={styles.locationHint}>Showing popular events right now.</span>
           ) : null}
         </div>
 
         {eventsToShow.length === 0 ? (
-          <p style={styles.emptyText}>No events available right now.</p>
+          <p style={styles.emptyText}>
+            {hadApiError
+              ? "Events are temporarily unavailable. Please refresh in a moment."
+              : "No events available right now."}
+          </p>
         ) : (
-          <div style={styles.localGrid}>
-            {eventsToShow.slice(0, 6).map((event) => (
-              <Link key={event.ID} href={`/event/${event.ID}`} style={styles.localCard}>
-                <div style={styles.localTitle}>{event.Name || "Untitled event"}</div>
-                <div style={styles.localMeta}>
-                  {event.City || ""}
-                  {event.City && event.Venue ? " • " : ""}
-                  {event.Venue || ""}
-                </div>
-                <div style={styles.localDate}>{formatEventDate(event.DisplayDate)}</div>
-              </Link>
-            ))}
-          </div>
+          <>
+            <div id="home-geo-carousel" className="tb-geo-grid" style={styles.localGrid}>
+              {eventsToShow.slice(0, 6).map((event) => {
+              const imageSources = resolveEventImageCandidates(event);
+              return (
+                <Link key={event.ID} href={`/event/${event.ID}`} className="tb-geo-card" style={styles.localCard}>
+                  <EventCardImage
+                    sources={imageSources}
+                    alt={event.Name || "Event image"}
+                    className="tb-geo-image"
+                    style={styles.localImage}
+                  />
+                  <div style={styles.localTitle}>{event.Name || "Untitled event"}</div>
+                  <div style={styles.localMeta}>
+                    {event.City || ""}
+                    {event.City && event.Venue ? " • " : ""}
+                    {event.Venue || ""}
+                  </div>
+                  <div style={styles.localDate}>{formatEventDate(event.DisplayDate)}</div>
+                </Link>
+              );
+              })}
+            </div>
+            <GeoCarouselIndicators
+              containerId="home-geo-carousel"
+              itemCount={Math.min(eventsToShow.length, 6)}
+            />
+          </>
         )}
       </section>
 
@@ -239,17 +318,27 @@ const styles: Record<string, React.CSSProperties> = {
 
   localGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: 12,
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: 16,
   },
   localCard: {
     display: "block",
     textDecoration: "none",
     color: "#111",
     padding: 14,
+    borderRadius: 16,
+    border: "1px solid #cfd5de",
+    background: "#eef1f5",
+    boxShadow: "0 1px 0 rgba(0, 0, 0, 0.06)",
+  },
+  localImage: {
+    width: "100%",
+    height: 172,
+    objectFit: "cover",
     borderRadius: 12,
-    border: "1px solid #e5e7eb",
-    background: "#fff",
+    border: "1px solid #eceff4",
+    background: "#f3f4f6",
+    marginBottom: 12,
   },
   localTitle: {
     fontWeight: 700,
@@ -258,12 +347,12 @@ const styles: Record<string, React.CSSProperties> = {
   },
   localMeta: {
     marginTop: 6,
-    color: "#555",
+    color: "#5b6472",
     fontSize: 13,
   },
   localDate: {
     marginTop: 6,
-    color: "#666",
+    color: "#6c7482",
     fontSize: 13,
   },
 

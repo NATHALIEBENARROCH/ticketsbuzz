@@ -39,7 +39,7 @@ async function testUrl(url) {
         const json = JSON.parse(body);
         console.log(`   ✅ JSON válido, keys: ${Object.keys(json).slice(0, 3).join(', ')}`);
       }
-    } catch (e) {
+    } catch {
       console.log(`   (No JSON, probablemente HTML/XML)`);
     }
   } catch (error) {
