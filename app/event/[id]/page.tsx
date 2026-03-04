@@ -2,6 +2,7 @@ import Link from "next/link";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
 import EventPurchasePanel from "@/app/components/EventPurchasePanel";
+import EventSeatMap from "@/app/components/EventSeatMap";
 
 type EventItem = {
   ID: number;
@@ -90,21 +91,13 @@ export default async function EventPage({
       <section style={{ marginTop: 20 }}>
         <h2 style={{ fontSize: 18, marginBottom: 10 }}>Seat map</h2>
 
-        {event.MapURL ? (
-          <img
-            src={event.MapURL}
-            alt="Seat map"
-            style={{
-              width: "100%",
-              maxWidth: 700,
-              borderRadius: 12,
-              border: "1px solid #eee",
-              background: "#fff",
-            }}
-          />
-        ) : (
-          <p style={{ color: "#777" }}>No seat map available for this event.</p>
-        )}
+        <EventSeatMap
+          eventId={event.ID}
+          mapUrl={event.MapURL}
+          interactiveMapUrl={event.InteractiveMapURL}
+          ticketLink={ticketLink}
+          wcid={wcid}
+        />
 
       </section>
 

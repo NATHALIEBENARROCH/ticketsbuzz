@@ -44,3 +44,18 @@ Use this env var to control purchase behavior on the event detail page:
 	- `true`: if an event has `InteractiveMapURL`, users must click **Open interactive map** first, then **Buy tickets** is enabled.
 
 This allows testing the map-first flow in preview/staging before turning it on in production.
+
+Use these env vars to enable embedded MapWidget3 integration on event pages:
+
+- `NEXT_PUBLIC_TN_ENABLE_MAPWIDGET3`
+	- `false` (default / production-safe): do not load widget script; page falls back to iframe/static map.
+	- `true`: enables script-based widget rendering.
+- `NEXT_PUBLIC_TN_MAPWIDGET_SCRIPT_URL`
+	- Full URL of the provider script from the MapWidget3 integration guide.
+
+Recommended rollout order:
+
+1. Deploy with `NEXT_PUBLIC_TN_ENABLE_MAPWIDGET3=false`.
+2. Set `NEXT_PUBLIC_TN_MAPWIDGET_SCRIPT_URL` in preview and enable `NEXT_PUBLIC_TN_ENABLE_MAPWIDGET3=true`.
+3. Validate event page widget rendering and external checkout redirect.
+4. Promote to production only after preview validation.
