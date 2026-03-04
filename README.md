@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## TicketsBuzz feature flags
+
+Use this env var to control purchase behavior on the event detail page:
+
+- `NEXT_PUBLIC_REQUIRE_MAP_INTERACTION_BEFORE_BUY`
+	- `false` (default / recommended for production safety): keeps current behavior, users can click **Buy tickets** immediately.
+	- `true`: if an event has `InteractiveMapURL`, users must click **Open interactive map** first, then **Buy tickets** is enabled.
+
+This allows testing the map-first flow in preview/staging before turning it on in production.

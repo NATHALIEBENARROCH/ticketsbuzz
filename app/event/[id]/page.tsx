@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
+import EventPurchasePanel from "@/app/components/EventPurchasePanel";
 
 type EventItem = {
   ID: number;
@@ -54,6 +55,8 @@ export default async function EventPage({
 
   const wcid = process.env.TN_WCID || "";
   const ticketLink = `https://www.ticketnetwork.com/tickets/${event.ID}?wcid=${wcid}`;
+  const requireMapInteractionBeforeBuy =
+    process.env.NEXT_PUBLIC_REQUIRE_MAP_INTERACTION_BEFORE_BUY === "true";
 
   const venueQuery = [event.Venue, event.City, event.StateProvince]
     .filter(Boolean)
@@ -103,47 +106,16 @@ export default async function EventPage({
           <p style={{ color: "#777" }}>No seat map available for this event.</p>
         )}
 
-        {event.InteractiveMapURL ? (
-          <div style={{ marginTop: 10 }}>
-            <a
-              href={event.InteractiveMapURL}
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: "underline" }}
-            >
-              Open interactive map →
-            </a>
-          </div>
-        ) : null}
       </section>
 
-      <section
-        style={{ marginTop: 26, display: "flex", gap: 12, flexWrap: "wrap" }}
-      >
-        {ticketLink ? (
-          <a
-            href={ticketLink}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              display: "inline-block",
-              padding: "10px 14px",
-              borderRadius: 10,
-              background: "#111",
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 600,
-            }}
-          >
-            Buy tickets
-          </a>
-        ) : (
-          <span style={{ color: "#777" }}>
-            (No ticket link in this data yet)
-          </span>
-        )}
+      <EventPurchasePanel
+        interactiveMapUrl={event.InteractiveMapURL}
+        ticketLink={ticketLink}
+        requireMapInteraction={requireMapInteractionBeforeBuy}
+      />
 
-        {venueMapLink ? (
+      {venueMapLink ? (
+        <section style={{ marginTop: 12 }}>
           <a
             href={venueMapLink}
             target="_blank"
@@ -161,8 +133,8 @@ export default async function EventPage({
           >
             Venue map
           </a>
-        ) : null}
-      </section>
+        </section>
+      ) : null}
     </main>
   );
 }
