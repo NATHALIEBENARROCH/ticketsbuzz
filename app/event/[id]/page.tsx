@@ -121,10 +121,8 @@ export default async function EventPage({
         style={{ marginTop: 26, display: "flex", gap: 12, flexWrap: "wrap" }}
       >
         {ticketLink ? (
-          <a
-            href={ticketLink}
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            href={`/event/${id}/tickets`}
             style={{
               display: "inline-block",
               padding: "10px 14px",
@@ -136,7 +134,7 @@ export default async function EventPage({
             }}
           >
             Buy tickets
-          </a>
+          </Link>
         ) : (
           <span style={{ color: "#777" }}>
             (No ticket link in this data yet)
