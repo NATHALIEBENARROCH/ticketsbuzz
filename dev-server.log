@@ -1,0 +1,430 @@
+
+> ticketbuzz-frontend@0.1.0 dev
+> next dev --port 3000
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.140:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 851ms
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7034762 200 in 2.1s (compile: 654ms, render: 1437ms)
+ GET /event/7034762 200 in 2.8s (compile: 582ms, render: 2.3s)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1338ms (compile: 21ms, render: 1317ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+ GET /api/event/7034762 200 in 786ms (compile: 20ms, render: 766ms)
+ GET /event/7034762 200 in 852ms (compile: 20ms, render: 832ms)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true 200 in 1321ms (compile: 3ms, render: 1318ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 8.5s (compile: 40ms, render: 8.5s)
+ GET / 200 in 8.8s (compile: 55ms, render: 8.7s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 495ms (compile: 247ms, render: 247ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 495ms (compile: 230ms, render: 265ms)
+ GET /api/artist-photo?name=%24quib 302 in 495ms (compile: 237ms, render: 258ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 499ms (compile: 256ms, render: 243ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 869ms (compile: 248ms, render: 621ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+ GET /api/event/7034762 200 in 804ms (compile: 27ms, render: 777ms)
+ GET /event/7034762 200 in 863ms (compile: 24ms, render: 839ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 3.1s (compile: 3ms, render: 3.1s)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1824ms (compile: 8ms, render: 1816ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.1s (compile: 3ms, render: 7.1s)
+ GET /?city=El+Palomar 200 in 10.2s (compile: 6ms, render: 10.2s)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1304ms (compile: 4ms, render: 1300ms)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 875ms (compile: 5ms, render: 871ms)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true 200 in 984ms (compile: 40ms, render: 945ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.0s (compile: 4ms, render: 7.0s)
+ GET / 200 in 7.1s (compile: 6ms, render: 7.1s)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 12ms (compile: 4ms, render: 7ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 14ms (compile: 8ms, render: 5ms)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 24ms (compile: 15ms, render: 8ms)
+ GET /api/artist-photo?name=%24quib 302 in 12ms (compile: 5ms, render: 7ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 22ms (compile: 14ms, render: 8ms)
+ GET /api/event/7727412 200 in 675ms (compile: 34ms, render: 641ms)
+ GET /event/7727412 200 in 754ms (compile: 25ms, render: 729ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.8s (compile: 3ms, render: 2.8s)
+ GET /api/mapwidget/html?eventId=7727412&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7727412%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1133ms (compile: 18ms, render: 1114ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.4s (compile: 3ms, render: 6.4s)
+ GET /?city=El+Palomar 200 in 9.3s (compile: 4ms, render: 9.3s)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+ GET /api/event/7727412 200 in 951ms (compile: 35ms, render: 916ms)
+ GET /event/7727412 200 in 1078ms (compile: 24ms, render: 1054ms)
+ GET /api/mapwidget/html?eventId=7727412&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7727412%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 667ms (compile: 7ms, render: 660ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🛡️ auth for agents: https://vestauth.com
+ GET /api/event/7727412 200 in 848ms (compile: 21ms, render: 827ms)
+ GET /event/7727412 200 in 970ms (compile: 24ms, render: 946ms)
+ GET /api/mapwidget/html?eventId=7727412&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7727412%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 705ms (compile: 12ms, render: 694ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.6s (compile: 2ms, render: 6.6s)
+ GET / 200 in 6.6s (compile: 4ms, render: 6.6s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 10ms (compile: 4ms, render: 7ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 7ms (compile: 2ms, render: 5ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 6ms (compile: 2ms, render: 4ms)
+ GET /api/artist-photo?name=%24quib 302 in 11ms (compile: 7ms, render: 4ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 9ms (compile: 2ms, render: 6ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/search?q=lad&limit=6 200 in 3.3s (compile: 2ms, render: 3.3s)
+ GET /api/search?q=lady&limit=6 200 in 3.1s (compile: 3ms, render: 3.1s)
+ GET /api/search?q=la&limit=6 200 in 4.2s (compile: 107ms, render: 4.1s)
+ GET /api/search?q=lady%20gaga&limit=6 200 in 1561ms (compile: 3ms, render: 1558ms)
+ GET /api/search?q=lady%20gaga&city= 200 in 1882ms (compile: 8ms, render: 1874ms)
+ GET /search?q=lady+gaga&city= 200 in 2.7s (compile: 667ms, render: 2.1s)
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/events?parentCategoryID=1&numberOfEvents=40 200 in 4.8s (compile: 3ms, render: 4.8s)
+ GET /events/1 200 in 5.8s (compile: 889ms, render: 4.9s)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true 200 in 932ms (compile: 39ms, render: 893ms)
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 8.7s (compile: 4ms, render: 8.7s)
+ GET / 200 in 8.9s (compile: 14ms, render: 8.9s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 12ms (compile: 7ms, render: 5ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 11ms (compile: 5ms, render: 6ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 18ms (compile: 12ms, render: 6ms)
+ GET /api/artist-photo?name=%24quib 302 in 36ms (compile: 20ms, render: 16ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 47ms (compile: 40ms, render: 7ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.2s (compile: 5ms, render: 2.2s)
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7727412 200 in 272ms (compile: 42ms, render: 230ms)
+ GET /event/7727412 200 in 350ms (compile: 26ms, render: 325ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+ GET /api/mapwidget/html?eventId=7727412&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7727412%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1050ms (compile: 5ms, render: 1045ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.3s (compile: 7ms, render: 7.3s)
+ GET /?city=El+Palomar 200 in 9.6s (compile: 4ms, render: 9.6s)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7727412 200 in 1687ms (compile: 24ms, render: 1663ms)
+ GET /event/7727412 200 in 1796ms (compile: 32ms, render: 1763ms)
+ GET /api/mapwidget/html?eventId=7727412&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7727412%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 575ms (compile: 3ms, render: 573ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  enable debug logging with { debug: true }
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7727412 200 in 3.0s (compile: 31ms, render: 2.9s)
+ GET /event/7727412 200 in 3.1s (compile: 28ms, render: 3.0s)
+ GET /api/mapwidget/html?eventId=7727412&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7727412%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1133ms (compile: 62ms, render: 1072ms)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true 200 in 898ms (compile: 2ms, render: 896ms)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true 200 in 1334ms (compile: 3ms, render: 1331ms)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true 200 in 1243ms (compile: 2ms, render: 1241ms)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true 200 in 581ms (compile: 3ms, render: 578ms)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true 200 in 1352ms (compile: 2ms, render: 1350ms)
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 8.8s (compile: 3ms, render: 8.8s)
+ GET / 200 in 8.9s (compile: 7ms, render: 8.9s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 20ms (compile: 9ms, render: 11ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 13ms (compile: 6ms, render: 7ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 22ms (compile: 14ms, render: 7ms)
+ GET /api/artist-photo?name=%24quib 302 in 30ms (compile: 23ms, render: 6ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 40ms (compile: 30ms, render: 10ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+ GET /api/event/7685137 200 in 597ms (compile: 11ms, render: 586ms)
+ GET /event/7685137 200 in 647ms (compile: 18ms, render: 628ms)
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 542ms (compile: 3ms, render: 539ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.4s (compile: 1607µs, render: 2.4s)
+ GET /?city=El+Palomar 200 in 5.0s (compile: 2ms, render: 5.0s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.5s (compile: 2ms, render: 7.5s)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🛡️ auth for agents: https://vestauth.com
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7685137 200 in 1161ms (compile: 26ms, render: 1136ms)
+ GET /event/7685137 200 in 1251ms (compile: 18ms, render: 1233ms)
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 533ms (compile: 6ms, render: 527ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.6s (compile: 2ms, render: 6.6s)
+ GET / 200 in 6.7s (compile: 4ms, render: 6.7s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 9ms (compile: 3ms, render: 6ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 9ms (compile: 4ms, render: 5ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 10ms (compile: 3ms, render: 6ms)
+ GET /api/artist-photo?name=%24quib 302 in 16ms (compile: 11ms, render: 5ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 5ms (compile: 2ms, render: 3ms)
+✓ Compiled in 35ms
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&cfg=test123 200 in 661ms (compile: 33ms, render: 628ms)
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true 200 in 570ms (compile: 2ms, render: 568ms)
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true 200 in 1374ms (compile: 29ms, render: 1345ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7250743 200 in 2.3s (compile: 21ms, render: 2.3s)
+ GET /event/7250743 200 in 2.5s (compile: 129ms, render: 2.4s)
+ GET /api/mapwidget/html?eventId=7250743&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7250743%3Fwcid%3D23933&cfg=736683b6&useDarkTheme=true&_attempt=0 200 in 759ms (compile: 4ms, render: 755ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7250743 200 in 2.3s (compile: 20ms, render: 2.2s)
+ GET /event/7250743 200 in 2.4s (compile: 28ms, render: 2.4s)
+ GET /api/mapwidget/html?eventId=7250743&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7250743%3Fwcid%3D23933&cfg=736683b6&useDarkTheme=true&_attempt=0 200 in 887ms (compile: 7ms, render: 880ms)
+✓ Compiled in 13ms
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+ GET /api/event/7250743 200 in 815ms (compile: 13ms, render: 802ms)
+ GET /event/7250743 200 in 974ms (compile: 74ms, render: 900ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.6s (compile: 3ms, render: 7.6s)
+ GET / 200 in 7.7s (compile: 4ms, render: 7.7s)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 7ms (compile: 2ms, render: 5ms)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 11ms (compile: 7ms, render: 4ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 15ms (compile: 10ms, render: 4ms)
+ GET /api/artist-photo?name=%24quib 302 in 13ms (compile: 8ms, render: 5ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 16ms (compile: 9ms, render: 8ms)
+ GET /api/event/7250743 200 in 270ms (compile: 26ms, render: 244ms)
+ GET /event/7250743 200 in 329ms (compile: 27ms, render: 302ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.9s (compile: 3ms, render: 6.9s)
+ GET / 200 in 7.0s (compile: 7ms, render: 7.0s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 10ms (compile: 4ms, render: 6ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 9ms (compile: 5ms, render: 4ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 8ms (compile: 3ms, render: 5ms)
+ GET /api/artist-photo?name=%24quib 302 in 15ms (compile: 9ms, render: 5ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 24ms (compile: 17ms, render: 7ms)
+ GET /api/event/7685137 200 in 254ms (compile: 20ms, render: 234ms)
+ GET /event/7685137 200 in 307ms (compile: 21ms, render: 285ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.8s (compile: 2ms, render: 2.8s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.0s (compile: 2ms, render: 7.0s)
+ GET /?city=El+Palomar 200 in 9.9s (compile: 4ms, render: 9.8s)
+✅ Token obtained, expires_in: 3600 seconds
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+ GET /api/event/7685137 200 in 1727ms (compile: 37ms, render: 1691ms)
+ GET /event/7685137 200 in 1858ms (compile: 37ms, render: 1821ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.4s (compile: 3ms, render: 6.4s)
+ GET / 200 in 6.5s (compile: 8ms, render: 6.5s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 20ms (compile: 8ms, render: 13ms)
+ GET /api/event/7250743 200 in 274ms (compile: 33ms, render: 241ms)
+ GET /event/7250743 200 in 330ms (compile: 16ms, render: 314ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  enable debug logging with { debug: true }
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.1s (compile: 4ms, render: 7.1s)
+ GET / 200 in 7.2s (compile: 9ms, render: 7.2s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 11ms (compile: 6ms, render: 5ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 9ms (compile: 4ms, render: 5ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 11ms (compile: 5ms, render: 5ms)
+ GET /api/artist-photo?name=%24quib 302 in 19ms (compile: 12ms, render: 7ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 28ms (compile: 19ms, render: 9ms)
+ GET /api/event/7250743 200 in 223ms (compile: 25ms, render: 198ms)
+ GET /event/7250743 200 in 296ms (compile: 31ms, render: 265ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.4s (compile: 5ms, render: 2.4s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.1s (compile: 3ms, render: 7.1s)
+ GET /?city=El+Palomar 200 in 9.6s (compile: 4ms, render: 9.5s)
+✓ Compiled in 36ms
+ GET /api/mapwidget/html?eventId=7250743&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7250743%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 873ms (compile: 7ms, render: 866ms)
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 8.9s (compile: 3ms, render: 8.9s)
+ GET / 200 in 9.0s (compile: 4ms, render: 9.0s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 10ms (compile: 4ms, render: 6ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 11ms (compile: 5ms, render: 5ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 16ms (compile: 11ms, render: 5ms)
+ GET /api/artist-photo?name=%24quib 302 in 23ms (compile: 18ms, render: 4ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 29ms (compile: 24ms, render: 5ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+ GET /api/event/7782755 200 in 755ms (compile: 21ms, render: 734ms)
+ GET /event/7782755 200 in 948ms (compile: 133ms, render: 815ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.4s (compile: 1743µs, render: 2.4s)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 755ms (compile: 52ms, render: 704ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.6s (compile: 3ms, render: 6.6s)
+ GET /?city=El+Palomar 200 in 9.0s (compile: 3ms, render: 9.0s)
+ GET /api/event/7782755 200 in 708ms (compile: 35ms, render: 673ms)
+ GET /event/7782755 200 in 944ms (compile: 38ms, render: 906ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 644ms (compile: 13ms, render: 631ms)
+ GET /event/7782755 200 in 196ms (compile: 127ms, render: 68ms)
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7034762%3Fwcid%3D23933&useDarkTheme=true 200 in 1321ms (compile: 43ms, render: 1278ms)
+✓ Compiled in 33ms
+ GET /api/mapwidget/html?eventId=7034762&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fcheckout.etickets.ca%2FCheckout.aspx%3Ffoo%3D1 200 in 873ms (compile: 36ms, render: 837ms)
+ GET /event/7782755 200 in 170ms (compile: 111ms, render: 59ms)
+✓ Compiled in 36ms
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 694ms (compile: 55ms, render: 638ms)
+✓ Compiled in 30ms
+ GET /event/7782755 200 in 252ms (compile: 140ms, render: 111ms)
+ GET /event/7782755 200 in 172ms (compile: 103ms, render: 69ms)
+ GET /event/7782755 200 in 109ms (compile: 72ms, render: 37ms)
+✓ Compiled in 25ms
+ GET /api/mapwidget/html?eventId=7250743&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fcheckout.etickets.ca%2FCheckout%2FOrder%3Futm_campaign%3Dcampaign%26utm_content%3Dcontent%26utm_medium%3Dmedium%26utm_source%3Dsource%26utm_term%3Dterm 200 in 1000ms (compile: 40ms, render: 960ms)
+✓ Compiled in 33ms
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  write to custom object with { processEnv: myObject }
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7782755 200 in 3.9s (compile: 37ms, render: 3.8s)
+ GET /event/7782755 200 in 4.2s (compile: 152ms, render: 4.0s)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1742ms (compile: 63ms, render: 1678ms)
+✓ Compiled in 36ms
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7782755 200 in 2.1s (compile: 21ms, render: 2.1s)
+ GET /event/7782755 200 in 2.4s (compile: 155ms, render: 2.3s)
+ GET /api/event/778275 404 in 290ms (compile: 23ms, render: 267ms)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1285ms (compile: 48ms, render: 1237ms)
+ GET /event/778275 200 in 376ms (compile: 27ms, render: 349ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 10.3s (compile: 3ms, render: 10.3s)
+ GET / 200 in 10.5s (compile: 5ms, render: 10.5s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 12ms (compile: 4ms, render: 8ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 13ms (compile: 4ms, render: 9ms)
+ GET /api/artist-photo?name=%24quib 302 in 21ms (compile: 14ms, render: 7ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 15ms (compile: 3ms, render: 12ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 8ms (compile: 3ms, render: 6ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+ GET /api/event/7262049 200 in 849ms (compile: 16ms, render: 833ms)
+ GET /event/7262049 200 in 909ms (compile: 20ms, render: 889ms)
+ GET /api/mapwidget/html?eventId=7262049&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7262049%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1283ms (compile: 3ms, render: 1280ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 3.1s (compile: 5ms, render: 3.1s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.8s (compile: 4ms, render: 6.8s)
+ GET /?city=El+Palomar 200 in 10.0s (compile: 4ms, render: 10.0s)
+✓ Compiled in 45ms
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 10.9s (compile: 3ms, render: 10.9s)
+ GET / 200 in 11.0s (compile: 4ms, render: 11.0s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 19ms (compile: 11ms, render: 8ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 16ms (compile: 7ms, render: 9ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 25ms (compile: 17ms, render: 8ms)
+ GET /api/artist-photo?name=%24quib 302 in 12ms (compile: 5ms, render: 7ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 15ms (compile: 6ms, render: 9ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.5s (compile: 5ms, render: 2.5s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 8.4s (compile: 3ms, render: 8.4s)
+ GET /?city=El+Palomar 200 in 10.9s (compile: 4ms, render: 10.9s)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🛡️ auth for agents: https://vestauth.com
+ GET /api/event/7685137 200 in 1099ms (compile: 21ms, render: 1078ms)
+ GET /event/7685137 200 in 1260ms (compile: 107ms, render: 1153ms)
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1973ms (compile: 60ms, render: 1913ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.8s (compile: 3ms, render: 7.8s)
+ GET / 200 in 7.9s (compile: 5ms, render: 7.9s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 16ms (compile: 9ms, render: 7ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 23ms (compile: 17ms, render: 6ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 30ms (compile: 24ms, render: 7ms)
+ GET /api/artist-photo?name=%24quib 302 in 14ms (compile: 8ms, render: 6ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 10ms (compile: 4ms, render: 6ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+ GET /api/event/7782755 200 in 715ms (compile: 17ms, render: 699ms)
+ GET /event/7782755 200 in 778ms (compile: 19ms, render: 759ms)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 694ms (compile: 46ms, render: 648ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 3.2s (compile: 1845µs, render: 3.2s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.1s (compile: 4ms, render: 7.1s)
+ GET /?city=El+Palomar 200 in 10.4s (compile: 4ms, render: 10.4s)
+ GET /event/7782755 200 in 189ms (compile: 93ms, render: 96ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.0s (compile: 3ms, render: 7.0s)
+ GET / 200 in 7.1s (compile: 5ms, render: 7.1s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 11ms (compile: 4ms, render: 7ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 8ms (compile: 4ms, render: 4ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 15ms (compile: 10ms, render: 5ms)
+ GET /api/artist-photo?name=%24quib 302 in 9ms (compile: 3ms, render: 6ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 17ms (compile: 11ms, render: 6ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.5s (compile: 2ms, render: 2.5s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.4s (compile: 5ms, render: 7.4s)
+ GET /?city=El+Palomar 200 in 10.0s (compile: 3ms, render: 10.0s)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+ GET /api/event/7782755 200 in 951ms (compile: 36ms, render: 915ms)
+ GET /event/7782755 200 in 1036ms (compile: 33ms, render: 1003ms)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 2.3s (compile: 7ms, render: 2.3s)
+ GET /event/7782755 200 in 149ms (compile: 113ms, render: 36ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.3s (compile: 7ms, render: 7.3s)
+ GET / 200 in 7.4s (compile: 5ms, render: 7.4s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 15ms (compile: 8ms, render: 7ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 21ms (compile: 15ms, render: 5ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 28ms (compile: 23ms, render: 5ms)
+ GET /api/artist-photo?name=%24quib 302 in 15ms (compile: 10ms, render: 4ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 22ms (compile: 16ms, render: 6ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.4s (compile: 3ms, render: 2.4s)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+ GET /api/event/7782755 200 in 1028ms (compile: 26ms, render: 1003ms)
+ GET /event/7782755 200 in 1084ms (compile: 16ms, render: 1068ms)
+ GET /api/mapwidget/html?eventId=7782755&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7782755%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1927ms (compile: 54ms, render: 1874ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.8s (compile: 3ms, render: 6.8s)
+ GET /?city=El+Palomar 200 in 9.3s (compile: 5ms, render: 9.3s)
+✓ Compiled in 26ms
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.5s (compile: 3ms, render: 7.5s)
+ GET / 200 in 7.6s (compile: 3ms, render: 7.6s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 10ms (compile: 3ms, render: 6ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 12ms (compile: 6ms, render: 6ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 11ms (compile: 5ms, render: 6ms)
+ GET /api/artist-photo?name=%24quib 302 in 17ms (compile: 12ms, render: 5ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 25ms (compile: 20ms, render: 5ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.3s (compile: 2ms, render: 2.3s)
+ GET /api/event/7685137 200 in 652ms (compile: 26ms, render: 626ms)
+ GET /event/7685137 200 in 828ms (compile: 106ms, render: 722ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  enable debug logging with { debug: true }
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1335ms (compile: 66ms, render: 1269ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.8s (compile: 1681µs, render: 6.8s)
+ GET /?city=El+Palomar 200 in 9.2s (compile: 4ms, render: 9.2s)
+ GET /api/event/7685137 200 in 708ms (compile: 41ms, render: 667ms)
+ GET /event/7685137 200 in 950ms (compile: 41ms, render: 909ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1940ms (compile: 17ms, render: 1923ms)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7685137 200 in 3.2s (compile: 25ms, render: 3.2s)
+ GET /event/7685137 200 in 3.4s (compile: 30ms, render: 3.3s)
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1318ms (compile: 6ms, render: 1312ms)
+ GET /event/7685137 200 in 178ms (compile: 125ms, render: 53ms)
+✓ Compiled in 33ms
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 10.1s (compile: 3ms, render: 10.1s)
+ GET / 200 in 10.2s (compile: 8ms, render: 10.2s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 7ms (compile: 3ms, render: 4ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 11ms (compile: 8ms, render: 3ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 6ms (compile: 2ms, render: 4ms)
+ GET /api/artist-photo?name=%24quib 302 in 5ms (compile: 2ms, render: 3ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 5ms (compile: 2ms, render: 3ms)
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 3.4s (compile: 4ms, render: 3.4s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.4s (compile: 3ms, render: 6.4s)
+ GET /?city=El+Palomar 200 in 9.8s (compile: 4ms, render: 9.8s)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  enable debug logging with { debug: true }
+ GET /api/event/7262049 200 in 967ms (compile: 17ms, render: 950ms)
+ GET /event/7262049 200 in 1152ms (compile: 121ms, render: 1032ms)
+ GET /api/mapwidget/html?eventId=7262049&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7262049%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1478ms (compile: 67ms, render: 1411ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 8.9s (compile: 3ms, render: 8.9s)
+ GET / 200 in 9.0s (compile: 4ms, render: 9.0s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 6ms (compile: 2ms, render: 4ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 7ms (compile: 2ms, render: 4ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 5ms (compile: 1740µs, render: 3ms)
+ GET /api/artist-photo?name=%24quib 302 in 5ms (compile: 1630µs, render: 3ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 6ms (compile: 2ms, render: 4ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.8s (compile: 3ms, render: 2.8s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.8s (compile: 4ms, render: 6.8s)
+ GET /?city=El+Palomar 200 in 9.7s (compile: 8ms, render: 9.7s)
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/event/7685137 200 in 3.1s (compile: 23ms, render: 3.1s)
+ GET /event/7685137 200 in 3.2s (compile: 16ms, render: 3.2s)
+ GET /api/mapwidget/html?eventId=7685137&websiteConfigId=23933&userAgent=TicketsBuzz&forceMapOpen=true&ticketUrl=https%3A%2F%2Fwww.ticketnetwork.com%2Ftickets%2F7685137%3Fwcid%3D23933&useDarkTheme=true&_attempt=0 200 in 1628ms (compile: 5ms, render: 1622ms)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 8.6s (compile: 4ms, render: 8.6s)
+ GET / 200 in 8.7s (compile: 5ms, render: 8.7s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 8ms (compile: 3ms, render: 5ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 11ms (compile: 8ms, render: 3ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 5ms (compile: 1832µs, render: 3ms)
+ GET /api/artist-photo?name=%24quib 302 in 6ms (compile: 1999µs, render: 4ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 5ms (compile: 1938µs, render: 3ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.8s (compile: 3ms, render: 2.8s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.0s (compile: 3ms, render: 6.0s)
+ GET /?city=El+Palomar 200 in 8.9s (compile: 5ms, render: 8.9s)
+✅ Token obtained, expires_in: 3600 seconds
+✅ Token obtained, expires_in: 3600 seconds
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 10.5s (compile: 4ms, render: 10.5s)
+ GET / 200 in 10.7s (compile: 10ms, render: 10.6s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 15ms (compile: 4ms, render: 10ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 14ms (compile: 6ms, render: 8ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 25ms (compile: 14ms, render: 11ms)
+ GET /api/artist-photo?name=%24quib 302 in 33ms (compile: 26ms, render: 7ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 46ms (compile: 35ms, render: 12ms)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 2.3s (compile: 2ms, render: 2.3s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 6.7s (compile: 3ms, render: 6.7s)
+ GET /?city=El+Palomar 200 in 9.1s (compile: 3ms, render: 9.1s)
+ GET /api/events?numberOfEvents=8&city=El%20Palomar&cityScope=city&diversify=1 200 in 3.4s (compile: 2ms, render: 3.4s)
+ GET /api/events?numberOfEvents=8&diversify=1 200 in 7.0s (compile: 2ms, render: 7.0s)
+ GET /?city=El+Palomar 200 in 10.5s (compile: 4ms, render: 10.5s)
+ GET /api/artist-photo?name=Pauly%20Shore 302 in 7ms (compile: 3ms, render: 5ms)
+ GET /api/artist-photo?name=The%20Third%20Mind 302 in 8ms (compile: 3ms, render: 4ms)
+ GET /api/artist-photo?name=%26%20Juliet 302 in 14ms (compile: 9ms, render: 5ms)
+ GET /api/artist-photo?name=%24quib 302 in 7ms (compile: 3ms, render: 5ms)
+ GET /api/artist-photo?name=%23SistersInLaw%20Live 302 in 7ms (compile: 2ms, render: 5ms)
+[?25h

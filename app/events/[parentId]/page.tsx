@@ -2,6 +2,7 @@ import Link from "next/link";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 
 type EventItem = {
   ID: number;
@@ -89,13 +90,33 @@ export default async function CategoryPage({
   const categoryLabelMap: Record<number, string> = {
     1: "Sports",
     2: "Concerts",
-    3: "Theater",
+    3: "Theatre",
   };
   const categoryLabel = categoryLabelMap[parentId] || `Category ${parentId}`;
 
-  const res = await fetch(`${baseUrl}/api/events?parentCategoryID=${parentId}&numberOfEvents=${limit}`, {
-    cache: "no-store",
-  });
+  const requestHeaders = await headers();
+  const requestHost = requestHeaders.get("host") || "";
+  const requestProto =
+    requestHeaders.get("x-forwarded-proto") ||
+    (requestHost.includes("localhost") ? "http" : "https");
+  const currentOrigin = requestHost ? `${requestProto}://${requestHost}` : baseUrl;
+
+  let res: Response;
+  try {
+    res = await fetch(`${currentOrigin}/api/events?parentCategoryID=${parentId}&numberOfEvents=${limit}`, {
+      cache: "no-store",
+    });
+  } catch {
+    return (
+      <main style={{ padding: 40, fontFamily: "Arial" }}>
+        <h1 style={{ fontSize: 40, marginBottom: 10 }}>{categoryLabel}</h1>
+        <p style={{ color: "#b00020" }}>
+          Failed to load events right now.
+        </p>
+        <Link href="/events">← Back to all events</Link>
+      </main>
+    );
+  }
 
   if (!res.ok) {
     return (
