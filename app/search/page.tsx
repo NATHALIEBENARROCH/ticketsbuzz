@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
 
@@ -19,10 +20,16 @@ type EventItem = {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }> | { q?: string };
+  searchParams: Promise<{ q?: string; city?: string }> | { q?: string; city?: string };
 }) {
+  const requestHeaders = await headers();
+  const requestHost = requestHeaders.get("host") || "";
+  const requestProto = requestHeaders.get("x-forwarded-proto") || (requestHost.includes("localhost") ? "http" : "https");
+  const currentOrigin = requestHost ? `${requestProto}://${requestHost}` : baseUrl;
+
   const resolvedSearchParams = await searchParams;
   const q = (resolvedSearchParams?.q ?? "").trim();
+  const city = (resolvedSearchParams?.city ?? "").trim();
   let events: EventItem[] = [];
   let errorMsg = "";
   let correctedQuery = "";
@@ -31,7 +38,7 @@ export default async function SearchPage({
   try {
     if (q) {
       const res = await fetch(
-        `${baseUrl}/api/search?q=${encodeURIComponent(q)}`,
+        `${currentOrigin}/api/search?q=${encodeURIComponent(q)}&city=${encodeURIComponent(city)}`,
         { cache: "no-store" },
       );
 
@@ -64,7 +71,9 @@ export default async function SearchPage({
       <h1 style={styles.h1}>Search results</h1>
 
       <p style={styles.meta}>
-        Query: <b>{q || "(empty)"}</b> — Results: <b>{q ? events.length : 0}</b>
+        Query: <b>{q || "(empty)"}</b>
+        {city ? <> — City: <b>{city}</b></> : null}
+        {" — Results: "}<b>{q ? events.length : 0}</b>
       </p>
 
       {!!correctedQuery && correctedQuery.toLowerCase() !== q.toLowerCase() && (
@@ -74,7 +83,7 @@ export default async function SearchPage({
             We interpreted your search using <b>{fallbackStrategy || "smart matching"}</b>.
           </div>
           <div style={{ marginTop: 8 }}>
-            <Link href={`/search?q=${encodeURIComponent(q)}`} style={styles.panelLink}>
+            <Link href={`/search?q=${encodeURIComponent(q)}${city ? `&city=${encodeURIComponent(city)}` : ""}`} style={styles.panelLink}>
               Retry exact search for &quot;{q}&quot;
             </Link>
           </div>

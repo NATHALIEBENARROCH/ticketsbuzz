@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
 
@@ -26,13 +27,18 @@ export default async function EventsPage({
 }: {
   searchParams?: Promise<{ limit?: string }> | { limit?: string };
 }) {
+  const requestHeaders = await headers();
+  const requestHost = requestHeaders.get("host") || "";
+  const requestProto = requestHeaders.get("x-forwarded-proto") || (requestHost.includes("localhost") ? "http" : "https");
+  const currentOrigin = requestHost ? `${requestProto}://${requestHost}` : baseUrl;
+
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const rawLimit = Number.parseInt(resolvedSearchParams?.limit || `${PAGE_STEP}`, 10);
   const limit = Number.isFinite(rawLimit) && rawLimit > 0
     ? Math.min(rawLimit, MAX_LIMIT)
     : PAGE_STEP;
 
-  const res = await fetch(`${baseUrl}/api/events?numberOfEvents=${limit}`, { cache: "no-store" });
+  const res = await fetch(`${currentOrigin}/api/events?numberOfEvents=${limit}`, { cache: "no-store" });
 
   if (!res.ok) {
     return (
@@ -66,7 +72,7 @@ export default async function EventsPage({
       <div style={{ marginBottom: 30 }}>
         <Link href="/events/2">Concerts</Link> |{" "}
         <Link href="/events/1">Sports</Link> |{" "}
-        <Link href="/events/3">Theater</Link>
+        <Link href="/events/3">Theatre</Link>
       </div>
 
       <ul style={{ listStyle: "none", padding: 0 }}>

@@ -74,7 +74,7 @@ export default function Header({ defaultQuery = "", showSearch = true }: HeaderP
             Sports
           </Link>
           <Link href="/events/3" style={styles.navLink}>
-            Theater
+            Theatre
           </Link>
         </div>
 

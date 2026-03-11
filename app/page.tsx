@@ -71,7 +71,8 @@ export default async function Home({
 
   const requestHeaders = await headers();
   const rawDetectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
-  const detectedCity = queryCity || normalizeCity(rawDetectedCity);
+  const detectedCity = normalizeCity(rawDetectedCity);
+  const activeCity = queryCity || detectedCity;
   const requestHost = requestHeaders.get("host") || "";
   const requestProto = requestHeaders.get("x-forwarded-proto") || (requestHost.includes("localhost") ? "http" : "https");
   const currentOrigin = requestHost ? `${requestProto}://${requestHost}` : baseUrl;
@@ -90,8 +91,8 @@ export default async function Home({
     }
   }
 
-  const localizedApiUrl = detectedCity
-    ? `${currentOrigin}/api/events?numberOfEvents=8&city=${encodeURIComponent(detectedCity)}`
+  const localizedApiUrl = activeCity
+    ? `${currentOrigin}/api/events?numberOfEvents=8&city=${encodeURIComponent(activeCity)}&cityScope=city&diversify=1`
     : "";
 
   const localizedFetch = localizedApiUrl
@@ -100,7 +101,7 @@ export default async function Home({
   const localizedEvents = localizedFetch.events;
 
   const fallbackFetch = localizedEvents.length === 0
-    ? await fetchEventList(`${currentOrigin}/api/events?numberOfEvents=8`)
+    ? await fetchEventList(`${currentOrigin}/api/events?numberOfEvents=8&diversify=1`)
     : { events: [] as EventItem[], ok: true };
   const fallbackEvents = fallbackFetch.events;
 
@@ -111,7 +112,7 @@ export default async function Home({
     : false;
   const hasLocalEvents = localizedEvents.length > 0;
   const hasPopularFallback = localizedEvents.length === 0 && fallbackEvents.length > 0;
-  const locationText = detectedCity || "your area";
+  const locationText = activeCity || "your area";
 
   return (
     <main style={styles.page}>
@@ -139,9 +140,21 @@ export default async function Home({
 
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>Events in {locationText}</h2>
-        <AutoGeoCity hasCity={Boolean(detectedCity)} />
+        <AutoGeoCity hasCity={Boolean(activeCity)} />
 
         <div style={styles.locationRow}>
+          <form action="/" method="GET" style={styles.locationForm}>
+            <label htmlFor="city" style={styles.locationLabel}>Location</label>
+            <input
+              id="city"
+              name="city"
+              defaultValue={activeCity}
+              placeholder="Change city"
+              style={styles.locationInput}
+              autoComplete="address-level2"
+            />
+            <button type="submit" style={styles.locationButton}>Update</button>
+          </form>
           <span style={styles.locationBadge}>You are in: {locationText}</span>
           {!hasLocalEvents && !hasPopularFallback ? (
             <span style={styles.locationHint}>No direct local matches, showing popular events.</span>
@@ -206,7 +219,7 @@ export default async function Home({
           </Link>
 
           <Link href="/events/3" className="tb-card" style={styles.card}>
-            <h3 style={styles.cardTitle}>🎭 Theater</h3>
+            <h3 style={styles.cardTitle}>🎭 Theatre</h3>
             <p style={styles.cardText}>Shows & performances</p>
           </Link>
 
@@ -216,11 +229,40 @@ export default async function Home({
           </Link>
         </div>
       </section>
+
+      {/* Footer con enlace a Policy al final */}
+      <footer style={styles.footer}>
+        <a href="/policy" style={styles.footerButton}>
+          Policy / Terms & Conditions
+        </a>
+      </footer>
     </main>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
+    footer: {
+      width: '100%',
+      padding: '32px 0 24px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      background: '#0b0f24',
+      marginTop: 40,
+    },
+    footerButton: {
+      color: '#fff',
+      background: '#1f2a5a',
+      border: 'none',
+      borderRadius: 999,
+      padding: '12px 28px',
+      fontSize: 15,
+      fontWeight: 700,
+      textDecoration: 'none',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+      transition: 'background 0.18s',
+      cursor: 'pointer',
+    },
   page: {
     fontFamily: "Arial",
     margin: 0,
@@ -296,6 +338,36 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     flexWrap: "wrap",
     marginBottom: 14,
+  },
+  locationForm: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  locationLabel: {
+    fontSize: 13,
+    color: "#333",
+    fontWeight: 700,
+  },
+  locationInput: {
+    border: "1px solid #c6c9d4",
+    borderRadius: 999,
+    padding: "8px 12px",
+    fontSize: 14,
+    minWidth: 170,
+    maxWidth: 220,
+    background: "#fff",
+  },
+  locationButton: {
+    border: "none",
+    borderRadius: 999,
+    padding: "8px 12px",
+    fontSize: 13,
+    fontWeight: 700,
+    background: "#1f2a5a",
+    color: "#fff",
+    cursor: "pointer",
   },
   locationBadge: {
     display: "inline-block",

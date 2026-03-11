@@ -34,8 +34,41 @@ function toEventTimestamp(event) {
   return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed;
 }
 
-function sortEventsByDate(events) {
+function normalizeToken(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function compareEventNames(firstEvent, secondEvent) {
+  const firstRawName = String(firstEvent?.Name || "").trim();
+  const secondRawName = String(secondEvent?.Name || "").trim();
+  const firstName = normalizeToken(firstEvent?.Name);
+  const secondName = normalizeToken(secondEvent?.Name);
+
+  if (!firstName && !secondName) return 0;
+  if (!firstName) return 1;
+  if (!secondName) return -1;
+
+  const firstStartsWithLetter = /^[A-Za-z]/.test(firstRawName);
+  const secondStartsWithLetter = /^[A-Za-z]/.test(secondRawName);
+
+  if (firstStartsWithLetter !== secondStartsWithLetter) {
+    return firstStartsWithLetter ? -1 : 1;
+  }
+
+  return firstName.localeCompare(secondName, "en", { sensitivity: "base" });
+}
+
+function sortEventsForListing(events) {
   return [...events].sort((firstEvent, secondEvent) => {
+    const byName = compareEventNames(firstEvent, secondEvent);
+    if (byName !== 0) return byName;
+
     return toEventTimestamp(firstEvent) - toEventTimestamp(secondEvent);
   });
 }
@@ -146,8 +179,17 @@ function setCachedResult(cacheKey, value) {
 }
 
 async function runSearch(params) {
-  const response = await getEvents(params);
-  const events = sortEventsByDate(normalizeEvents(response.parsed?.result));
+  const requestedCount = Number.isFinite(params.numberOfEvents)
+    ? Math.max(1, Number(params.numberOfEvents))
+    : 20;
+  const sourceFetchCount = Math.min(Math.max(requestedCount * 4, requestedCount), 200);
+
+  const response = await getEvents({
+    orderByClause: "Name ASC",
+    ...params,
+    numberOfEvents: sourceFetchCount,
+  });
+  const events = sortEventsForListing(normalizeEvents(response.parsed?.result)).slice(0, requestedCount);
   return { response, events };
 }
 
@@ -155,12 +197,13 @@ export async function GET(request) {
   // leer parámetro q de la URL
   const { searchParams } = new URL(request.url);
   const query = (searchParams.get("q") || "").trim();
+  const city = (searchParams.get("city") || "").trim();
   const rawLimit = Number.parseInt(searchParams.get("limit") || "20", 10);
   const numberOfEvents = Number.isFinite(rawLimit) && rawLimit > 0
     ? Math.min(rawLimit, 50)
     : 20;
 
-  const cacheKey = `${query.toLowerCase()}|${numberOfEvents}`;
+  const cacheKey = `${query.toLowerCase()}|${city.toLowerCase()}|${numberOfEvents}`;
 
   if (!query) {
     return withCorsJson({ result: [], count: 0, parseError: null }, request);
@@ -179,6 +222,7 @@ export async function GET(request) {
     const baseSearch = await runSearch({
       eventName: query,
       performerName: query,
+      cityZip: city || undefined,
       numberOfEvents,
     });
 
@@ -195,6 +239,7 @@ export async function GET(request) {
         const cleanedSearch = await runSearch({
           eventName: cleaned,
           performerName: cleaned,
+          cityZip: city || undefined,
           numberOfEvents,
         });
 
@@ -215,6 +260,7 @@ export async function GET(request) {
           const typoSearch = await runSearch({
             eventName: typoCorrected,
             performerName: typoCorrected,
+            cityZip: city || undefined,
             numberOfEvents,
           });
 
@@ -231,7 +277,7 @@ export async function GET(request) {
 
       if (events.length === 0 && cleaned) {
         const cityVenueSearch = await runSearch({
-          cityZip: cleaned,
+          cityZip: city || cleaned,
           venueName: cleaned,
           eventName: cleaned,
           numberOfEvents,
@@ -248,7 +294,7 @@ export async function GET(request) {
       }
     }
 
-    events = sortEventsByDate(events).map(toSearchItem);
+    events = sortEventsForListing(events).map(toSearchItem);
 
     const payload = {
       result: events,

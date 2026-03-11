@@ -12,6 +12,7 @@ type SuggestionItem = {
 
 export default function HeroSearch() {
   const [q, setQ] = useState("");
+  const [city, setCity] = useState("");
   const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +67,14 @@ export default function HeroSearch() {
           style={styles.input}
           autoComplete="off"
         />
+        <input
+          name="city"
+          value={city}
+          onChange={(event) => setCity(event.target.value)}
+          placeholder="City (optional)"
+          style={styles.cityInput}
+          autoComplete="off"
+        />
         <button type="submit" style={styles.button}>
           Search
         </button>
@@ -116,6 +125,16 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
     padding: "14px 16px",
     fontSize: 16,
+    borderRadius: 999,
+    border: "1px solid rgba(255,255,255,0.25)",
+    background: "rgba(255,255,255,0.95)",
+    outline: "none",
+    color: "#111",
+  },
+  cityInput: {
+    width: 180,
+    padding: "14px 16px",
+    fontSize: 15,
     borderRadius: 999,
     border: "1px solid rgba(255,255,255,0.25)",
     background: "rgba(255,255,255,0.95)",
