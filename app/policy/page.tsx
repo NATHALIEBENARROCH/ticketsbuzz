@@ -1,16 +1,18 @@
+
 import React from "react";
+import Script from "next/script";
 
 const PolicyPage = () => (
   <main style={{ padding: 24, maxWidth: 700, margin: "0 auto" }}>
     <h1>Policy / Terms and Conditions</h1>
     <p>This page contains our policy and terms & conditions.</p>
-    {/* External script as requested */}
-    <div id="external-policy-script">
-      <script
-        language="javascript"
-        src="http://tickettransaction.com/?bid=4579&sitenumber=23&tid=600"
-      ></script>
-    </div>
+    {/* Contenedor para el script externo */}
+    <div id="external-policy-script"></div>
+    <Script
+      id="external-policy-script-loader"
+      src="http://tickettransaction.com/?bid=4579&sitenumber=23&tid=600"
+      strategy="afterInteractive"
+    />
   </main>
 );
 
