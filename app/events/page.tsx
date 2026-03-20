@@ -2,6 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
+import AutoGeoCity from "@/app/components/AutoGeoCity";
 
 type EventItem = {
   ID: number;
@@ -25,7 +26,7 @@ const MAX_LIMIT = 200;
 export default async function EventsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ limit?: string }> | { limit?: string };
+  searchParams?: Promise<{ limit?: string; city?: string }> | { limit?: string; city?: string };
 }) {
   const requestHeaders = await headers();
   const requestHost = requestHeaders.get("host") || "";
@@ -37,8 +38,18 @@ export default async function EventsPage({
   const limit = Number.isFinite(rawLimit) && rawLimit > 0
     ? Math.min(rawLimit, MAX_LIMIT)
     : PAGE_STEP;
+  const queryCity = (resolvedSearchParams?.city || "").trim();
+  const detectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
+  const activeCity = queryCity || detectedCity;
 
-  const res = await fetch(`${currentOrigin}/api/events?numberOfEvents=${limit}`, { cache: "no-store" });
+  const params = new URLSearchParams();
+  params.set("numberOfEvents", String(limit));
+  if (activeCity) {
+    params.set("city", activeCity);
+    params.set("cityScope", "city");
+  }
+
+  const res = await fetch(`${currentOrigin}/api/events?${params.toString()}`, { cache: "no-store" });
 
   if (!res.ok) {
     return (
@@ -69,10 +80,12 @@ export default async function EventsPage({
     <main style={{ padding: 40, fontFamily: "Arial" }}>
       <h1 style={{ fontSize: "32px", marginBottom: "20px" }}>All Events</h1>
 
+      <AutoGeoCity hasCity={Boolean(activeCity)} />
+
       <div style={{ marginBottom: 30 }}>
-        <Link href="/events/2">Concerts</Link> |{" "}
-        <Link href="/events/1">Sports</Link> |{" "}
-        <Link href="/events/3">Theatre</Link>
+        <Link href={activeCity ? `/events/2?city=${encodeURIComponent(activeCity)}` : "/events/2"}>Concerts</Link> |{" "}
+        <Link href={activeCity ? `/events/1?city=${encodeURIComponent(activeCity)}` : "/events/1"}>Sports</Link> |{" "}
+        <Link href={activeCity ? `/events/3?city=${encodeURIComponent(activeCity)}` : "/events/3"}>Theatre</Link>
       </div>
 
       <ul style={{ listStyle: "none", padding: 0 }}>

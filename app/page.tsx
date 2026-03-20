@@ -61,6 +61,23 @@ function normalizeCity(raw: string) {
   return city;
 }
 
+function normalizeToken(value: string) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function withCity(basePath: string, city?: string) {
+  if (!city) return basePath;
+  const params = new URLSearchParams();
+  params.set("city", city);
+  return `${basePath}?${params.toString()}`;
+}
+
 export default async function Home({
   searchParams,
 }: {
@@ -100,18 +117,30 @@ export default async function Home({
     : { events: [] as EventItem[], ok: true };
   const localizedEvents = localizedFetch.events;
 
-  const fallbackFetch = localizedEvents.length === 0
+  const normalizedActiveCity = normalizeToken(activeCity || "");
+  const hasStrictCityMatches = normalizedActiveCity
+    ? localizedEvents.some((event) => normalizeToken(event?.City || "") === normalizedActiveCity)
+    : localizedEvents.length > 0;
+
+  const featuredFetch = (!hasStrictCityMatches)
+    ? await fetchEventList(`${currentOrigin}/api/featured?numberOfEvents=8`)
+    : { events: [] as EventItem[], ok: true };
+  const featuredEvents = featuredFetch.events;
+
+  const fallbackFetch = (!hasStrictCityMatches && featuredEvents.length === 0)
     ? await fetchEventList(`${currentOrigin}/api/events?numberOfEvents=8&diversify=1`)
     : { events: [] as EventItem[], ok: true };
   const fallbackEvents = fallbackFetch.events;
 
-  const eventsToShow = localizedEvents.length > 0 ? localizedEvents : fallbackEvents;
+  const eventsToShow = hasStrictCityMatches
+    ? localizedEvents
+    : (featuredEvents.length > 0 ? featuredEvents : fallbackEvents);
 
-  const hadApiError = localizedEvents.length === 0 && fallbackEvents.length === 0
-    ? (!localizedFetch.ok && !fallbackFetch.ok)
+  const hadApiError = eventsToShow.length === 0
+    ? (!localizedFetch.ok && !featuredFetch.ok && !fallbackFetch.ok)
     : false;
-  const hasLocalEvents = localizedEvents.length > 0;
-  const hasPopularFallback = localizedEvents.length === 0 && fallbackEvents.length > 0;
+  const hasLocalEvents = hasStrictCityMatches;
+  const hasPopularFallback = !hasStrictCityMatches && eventsToShow.length > 0;
   const locationText = activeCity || "your area";
 
   return (
@@ -128,10 +157,10 @@ export default async function Home({
           <HeroSearch />
 
           <div style={styles.heroCtas}>
-            <Link href="/events" style={styles.ctaSecondary}>
+            <Link href={withCity("/events", activeCity)} style={styles.ctaSecondary}>
               Browse all events
             </Link>
-            <Link href="/events/2" style={styles.ctaSecondary}>
+            <Link href={withCity("/events/2", activeCity)} style={styles.ctaSecondary}>
               Browse concerts
             </Link>
           </div>
@@ -157,10 +186,10 @@ export default async function Home({
           </form>
           <span style={styles.locationBadge}>You are in: {locationText}</span>
           {!hasLocalEvents && !hasPopularFallback ? (
-            <span style={styles.locationHint}>No direct local matches, showing popular events.</span>
+            <span style={styles.locationHint}>No direct local matches yet.</span>
           ) : null}
           {!hasLocalEvents && hasPopularFallback ? (
-            <span style={styles.locationHint}>Showing popular events right now.</span>
+            <span style={styles.locationHint}>Showing featured events right now.</span>
           ) : null}
         </div>
 
@@ -208,22 +237,22 @@ export default async function Home({
 
         {/* ✅ Transition + hover comes from globals.css (see note below) */}
         <div style={styles.grid}>
-          <Link href="/events/2" className="tb-card" style={styles.card}>
+          <Link href={withCity("/events/2", activeCity)} className="tb-card" style={styles.card}>
             <h3 style={styles.cardTitle}>🎵 Music</h3>
             <p style={styles.cardText}>Concerts & tours</p>
           </Link>
 
-          <Link href="/events/1" className="tb-card" style={styles.card}>
+          <Link href={withCity("/events/1", activeCity)} className="tb-card" style={styles.card}>
             <h3 style={styles.cardTitle}>🏀 Sports</h3>
             <p style={styles.cardText}>Games & matches</p>
           </Link>
 
-          <Link href="/events/3" className="tb-card" style={styles.card}>
+          <Link href={withCity("/events/3", activeCity)} className="tb-card" style={styles.card}>
             <h3 style={styles.cardTitle}>🎭 Theatre</h3>
             <p style={styles.cardText}>Shows & performances</p>
           </Link>
 
-          <Link href="/events" className="tb-card" style={styles.card}>
+          <Link href={withCity("/events", activeCity)} className="tb-card" style={styles.card}>
             <h3 style={styles.cardTitle}>⭐ All Events</h3>
             <p style={styles.cardText}>Browse everything</p>
           </Link>
@@ -271,8 +300,9 @@ const styles: Record<string, React.CSSProperties> = {
   hero: {
     position: "relative",
     height: 420,
-    overflow: "hidden",
+    overflow: "visible",
     background: "#0b0f24",
+    zIndex: 1,
   },
 
   heroImg: {

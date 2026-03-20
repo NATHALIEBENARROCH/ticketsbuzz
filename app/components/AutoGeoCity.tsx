@@ -1,16 +1,15 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 
 type AutoGeoCityProps = {
   hasCity: boolean;
 };
 
 export default function AutoGeoCity({ hasCity }: AutoGeoCityProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [status, setStatus] = useState<"idle" | "detecting" | "denied" | "unsupported" | "insecure" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "detecting" | "denied" | "unsupported" | "insecure" | "error"
+  >("idle");
   const requestedRef = useRef(false);
 
   const requestLocation = useCallback(() => {
@@ -33,13 +32,10 @@ export default function AutoGeoCity({ hasCity }: AutoGeoCityProps) {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
+          const { latitude, longitude } = position.coords;
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
-            {
-              headers: { Accept: "application/json" },
-            },
+            { headers: { Accept: "application/json" } },
           );
 
           if (!response.ok) {
@@ -62,9 +58,12 @@ export default function AutoGeoCity({ hasCity }: AutoGeoCityProps) {
             return;
           }
 
-          const params = new URLSearchParams(searchParams?.toString() || "");
+          // Use window.location.replace so the server component re-runs with the new city param.
+          const params = new URLSearchParams(window.location.search);
           params.set("city", city);
-          router.replace(`/?${params.toString()}`, { scroll: false });
+          window.location.replace(
+            `${window.location.pathname}?${params.toString()}`,
+          );
         } catch {
           setStatus("error");
         }
@@ -78,7 +77,7 @@ export default function AutoGeoCity({ hasCity }: AutoGeoCityProps) {
         maximumAge: 600000,
       },
     );
-  }, [hasCity, router, searchParams]);
+  }, [hasCity]);
 
   useEffect(() => {
     if (hasCity) return;
