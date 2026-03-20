@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
 import AutoGeoCity from "@/app/components/AutoGeoCity";
+import EventCardImage from "@/app/components/EventCardImage";
 
 type EventItem = {
   ID: number;
@@ -174,45 +175,52 @@ export default async function EventsPage({
       </div>
 
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {events.map((event) => (
-          <li
-            key={event.ID}
-            style={{
-              marginBottom: "20px",
-              padding: "20px",
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              background: "#fff",
-            }}
-          >
-            <h3 style={{ marginBottom: 6, color: "#111827" }}>
-              {event.Name ?? "Untitled event"}
-            </h3>
+        {events.map((event) => {
+          const artistName = (event.Name || "").trim();
+          const imageSources = [
+            artistName ? `/api/artist-photo?name=${encodeURIComponent(artistName)}` : "",
+            "/hero.png",
+          ].filter(Boolean);
 
-            <p style={{ fontWeight: "500", margin: "6px 0", color: "#4b5563" }}>
-              {event.Venue ?? ""}
-            </p>
-
-            <p style={{ color: "#4b5563", margin: "6px 0" }}>
-              {event.City ?? ""}
-              {event.City && event.StateProvince ? ", " : ""}
-              {event.StateProvince ?? ""}
-            </p>
-
-            <p style={{ color: "#6b7280", margin: "6px 0" }}>
-              {formatEventDate(event.DisplayDate)}
-            </p>
-
-            <div style={{ marginTop: 12 }}>
-              <Link
-                href={`/event/${event.ID}`}
-                style={{ color: "#1d4ed8", textDecoration: "underline" }}
-              >
-                View details →
-              </Link>
-            </div>
-          </li>
-        ))}
+          return (
+            <li
+              key={event.ID}
+              style={{
+                marginBottom: "16px",
+                padding: "16px",
+                border: "1px solid #e5e7eb",
+                borderRadius: "12px",
+                background: "#fff",
+                display: "flex",
+                gap: "16px",
+                alignItems: "flex-start",
+              }}
+            >
+              <EventCardImage
+                sources={imageSources}
+                alt={artistName || "Event"}
+                style={{ width: 120, height: 90, objectFit: "cover", borderRadius: 8, flexShrink: 0 }}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ margin: "0 0 4px", color: "#111827", fontSize: 16 }}>
+                  {event.Name ?? "Untitled event"}
+                </h3>
+                <p style={{ margin: "2px 0", color: "#4b5563", fontSize: 14 }}>
+                  {[event.City, event.StateProvince].filter(Boolean).join(", ")}
+                  {event.Venue ? ` • ${event.Venue}` : ""}
+                </p>
+                <p style={{ margin: "2px 0", color: "#6b7280", fontSize: 13 }}>
+                  {formatEventDate(event.DisplayDate)}
+                </p>
+                <div style={{ marginTop: 8 }}>
+                  <Link href={`/event/${event.ID}`} style={{ color: "#1d4ed8", textDecoration: "underline", fontSize: 13 }}>
+                    View details →
+                  </Link>
+                </div>
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
       <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
