@@ -53,21 +53,6 @@ async function fetchEvents(url: string): Promise<EventItem[]> {
   } catch { return []; }
 }
 
-function dedupeEventsById(events: EventItem[]) {
-  const seen = new Set<number>();
-  const unique: EventItem[] = [];
-
-  for (const event of events) {
-    const eventId = Number(event?.ID);
-    if (!Number.isFinite(eventId)) continue;
-    if (seen.has(eventId)) continue;
-    seen.add(eventId);
-    unique.push(event);
-  }
-
-  return unique;
-}
-
 function withCity(path: string, city?: string) {
   return city ? `${path}?city=${encodeURIComponent(city)}` : path;
 }
@@ -90,9 +75,10 @@ export default async function EventsPage({
   const detectedCity = normalizeCity((requestHeaders.get("x-vercel-ip-city") || "").trim());
   const activeCity = queryCity || detectedCity;
 
-  // Phase 1: fetch with city filter (date-prioritized order, no diversification)
+  // Phase 1: fetch with city filter + diversify
   const cityParams = new URLSearchParams();
   cityParams.set("numberOfEvents", String(MAX_LIMIT));
+  cityParams.set("diversify", "1");
   if (activeCity) {
     cityParams.set("city", activeCity);
     cityParams.set("cityScope", "city");
@@ -116,16 +102,15 @@ export default async function EventsPage({
   if (!hasStrictCityMatches && featuredEvents.length === 0) {
     const generalParams = new URLSearchParams();
     generalParams.set("numberOfEvents", String(MAX_LIMIT));
+    generalParams.set("diversify", "1");
     generalEvents = await fetchEvents(`${currentOrigin}/api/events?${generalParams.toString()}`);
   }
 
-  const allEventsRaw = hasStrictCityMatches
+  const allEvents = hasStrictCityMatches
     ? cityEvents
     : featuredEvents.length > 0
       ? featuredEvents
       : generalEvents;
-
-  const allEvents = dedupeEventsById(allEventsRaw);
 
   const events = allEvents.slice(0, limit);
 
