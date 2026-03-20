@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { headers } from "next/headers";
 import { baseUrl } from "@/lib/api";
 import { formatEventDate } from "@/lib/dateFormat";
@@ -12,9 +12,7 @@ type EventItem = {
   Venue?: string;
   DisplayDate?: string;
   ParentCategoryID?: number;
-
   MapURL?: string;
-
   TicketURL?: string;
   ExternalURL?: string;
   Url?: string;
@@ -22,6 +20,41 @@ type EventItem = {
 
 const PAGE_STEP = 40;
 const MAX_LIMIT = 200;
+
+function normalizeToken(value: string) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeCity(raw: string) {
+  let city = (raw || "").trim().replace(/\+/g, " ");
+  for (let i = 0; i < 3; i++) {
+    try {
+      const decoded = decodeURIComponent(city);
+      if (decoded === city) break;
+      city = decoded;
+    } catch { break; }
+  }
+  return city;
+}
+
+async function fetchEvents(url: string): Promise<EventItem[]> {
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data?.result ?? []) as EventItem[];
+  } catch { return []; }
+}
+
+function withCity(path: string, city?: string) {
+  return city ? `${path}?city=${encodeURIComponent(city)}` : path;
+}
 
 export default async function EventsPage({
   searchParams,
@@ -35,46 +68,78 @@ export default async function EventsPage({
 
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const rawLimit = Number.parseInt(resolvedSearchParams?.limit || `${PAGE_STEP}`, 10);
-  const limit = Number.isFinite(rawLimit) && rawLimit > 0
-    ? Math.min(rawLimit, MAX_LIMIT)
-    : PAGE_STEP;
-  const queryCity = (resolvedSearchParams?.city || "").trim();
-  const detectedCity = (requestHeaders.get("x-vercel-ip-city") || "").trim();
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, MAX_LIMIT) : PAGE_STEP;
+
+  const queryCity = normalizeCity(resolvedSearchParams?.city || "");
+  const detectedCity = normalizeCity((requestHeaders.get("x-vercel-ip-city") || "").trim());
   const activeCity = queryCity || detectedCity;
 
-  const params = new URLSearchParams();
-  params.set("numberOfEvents", String(limit));
+  // Phase 1: fetch with city filter + diversify
+  const cityParams = new URLSearchParams();
+  cityParams.set("numberOfEvents", String(MAX_LIMIT));
+  cityParams.set("diversify", "1");
   if (activeCity) {
-    params.set("city", activeCity);
-    params.set("cityScope", "city");
+    cityParams.set("city", activeCity);
+    cityParams.set("cityScope", "city");
+  }
+  const cityEvents = await fetchEvents(`${currentOrigin}/api/events?${cityParams.toString()}`);
+
+  // Check for strict city matches
+  const normalizedActiveCity = normalizeToken(activeCity);
+  const hasStrictCityMatches = normalizedActiveCity
+    ? cityEvents.some((e) => normalizeToken(e?.City || "") === normalizedActiveCity)
+    : cityEvents.length > 0;
+
+  // Phase 2: featured fallback if no local matches
+  let featuredEvents: EventItem[] = [];
+  if (!hasStrictCityMatches) {
+    featuredEvents = await fetchEvents(`${currentOrigin}/api/featured?numberOfEvents=${MAX_LIMIT}`);
   }
 
-  const res = await fetch(`${currentOrigin}/api/events?${params.toString()}`, { cache: "no-store" });
-
-  if (!res.ok) {
-    return (
-      <main style={{ padding: 40, fontFamily: "Arial" }}>
-        <h1 style={{ fontSize: 32, marginBottom: 10 }}>All Events</h1>
-        <p style={{ color: "#b00020" }}>
-          Failed to load events (HTTP {res.status})
-        </p>
-        <Link href="/">← Back home</Link>
-      </main>
-    );
+  // Phase 3: general fallback (no city filter) if featured also empty
+  let generalEvents: EventItem[] = [];
+  if (!hasStrictCityMatches && featuredEvents.length === 0) {
+    const generalParams = new URLSearchParams();
+    generalParams.set("numberOfEvents", String(MAX_LIMIT));
+    generalParams.set("diversify", "1");
+    generalEvents = await fetchEvents(`${currentOrigin}/api/events?${generalParams.toString()}`);
   }
 
-  const data = await res.json();
-  const events: EventItem[] = data?.result ?? [];
+  const allEvents = hasStrictCityMatches
+    ? cityEvents
+    : featuredEvents.length > 0
+      ? featuredEvents
+      : generalEvents;
+
+  const events = allEvents.slice(0, limit);
+
+  const hasLocalEvents = hasStrictCityMatches;
+  const hasFeaturedFallback = !hasStrictCityMatches && featuredEvents.length > 0;
+  const locationText = activeCity || "your area";
+
+  const locationMessage = hasLocalEvents
+    ? `Showing events near: ${locationText}`
+    : hasFeaturedFallback
+      ? `No local events found for ${locationText}. Showing featured events right now.`
+      : activeCity
+        ? `No local events found for ${locationText}. Showing popular events.`
+        : null;
 
   if (events.length === 0) {
     return (
       <main style={{ padding: 40, fontFamily: "Arial" }}>
         <h1 style={{ fontSize: 32, marginBottom: 10 }}>All Events</h1>
+        <AutoGeoCity hasCity={Boolean(activeCity)} />
         <p>No events available right now.</p>
         <Link href="/">← Back home</Link>
       </main>
     );
   }
+
+  const loadMoreHref = activeCity
+    ? `/events?limit=${Math.min(limit + PAGE_STEP, MAX_LIMIT)}&city=${encodeURIComponent(activeCity)}`
+    : `/events?limit=${Math.min(limit + PAGE_STEP, MAX_LIMIT)}`;
+  const showLessHref = activeCity ? `/events?city=${encodeURIComponent(activeCity)}` : "/events";
 
   return (
     <main style={{ padding: 40, fontFamily: "Arial" }}>
@@ -82,10 +147,30 @@ export default async function EventsPage({
 
       <AutoGeoCity hasCity={Boolean(activeCity)} />
 
-      <div style={{ marginBottom: 30 }}>
-        <Link href={activeCity ? `/events/2?city=${encodeURIComponent(activeCity)}` : "/events/2"}>Concerts</Link> |{" "}
-        <Link href={activeCity ? `/events/1?city=${encodeURIComponent(activeCity)}` : "/events/1"}>Sports</Link> |{" "}
-        <Link href={activeCity ? `/events/3?city=${encodeURIComponent(activeCity)}` : "/events/3"}>Theatre</Link>
+      <div style={{ marginBottom: 16, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <form action="/events" method="GET" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <label htmlFor="city-input" style={{ fontSize: 14, color: "#6b7280" }}>Location</label>
+          <input
+            id="city-input"
+            name="city"
+            type="text"
+            defaultValue={activeCity}
+            placeholder="Enter city"
+            style={{ border: "1px solid #d1d5db", borderRadius: 20, padding: "6px 14px", fontSize: 14, outline: "none" }}
+          />
+          <button type="submit" style={{ background: "#1f2a5a", color: "#fff", border: "none", borderRadius: 20, padding: "6px 16px", fontSize: 14, cursor: "pointer" }}>
+            Update
+          </button>
+        </form>
+        {locationMessage && (
+          <span style={{ fontSize: 13, color: "#6b7280" }}>{locationMessage}</span>
+        )}
+      </div>
+
+      <div style={{ marginBottom: 24, display: "flex", gap: 12 }}>
+        <Link href={withCity("/events/2", activeCity)} style={{ color: "#1d4ed8", textDecoration: "underline" }}>Concerts</Link>
+        <Link href={withCity("/events/1", activeCity)} style={{ color: "#1d4ed8", textDecoration: "underline" }}>Sports</Link>
+        <Link href={withCity("/events/3", activeCity)} style={{ color: "#1d4ed8", textDecoration: "underline" }}>Theatre</Link>
       </div>
 
       <ul style={{ listStyle: "none", padding: 0 }}>
@@ -100,28 +185,28 @@ export default async function EventsPage({
               background: "#fff",
             }}
           >
-            <h3 style={{ marginBottom: 6 }}>
+            <h3 style={{ marginBottom: 6, color: "#111827" }}>
               {event.Name ?? "Untitled event"}
             </h3>
 
-            <p style={{ fontWeight: "500", margin: "6px 0" }}>
-              📍 {event.Venue ?? ""}
+            <p style={{ fontWeight: "500", margin: "6px 0", color: "#4b5563" }}>
+              {event.Venue ?? ""}
             </p>
 
-            <p style={{ color: "#555", margin: "6px 0" }}>
+            <p style={{ color: "#4b5563", margin: "6px 0" }}>
               {event.City ?? ""}
               {event.City && event.StateProvince ? ", " : ""}
               {event.StateProvince ?? ""}
             </p>
 
-            <p style={{ color: "#777", margin: "6px 0" }}>
-              🗓 {formatEventDate(event.DisplayDate)}
+            <p style={{ color: "#6b7280", margin: "6px 0" }}>
+              {formatEventDate(event.DisplayDate)}
             </p>
 
             <div style={{ marginTop: 12 }}>
               <Link
                 href={`/event/${event.ID}`}
-                style={{ textDecoration: "underline" }}
+                style={{ color: "#1d4ed8", textDecoration: "underline" }}
               >
                 View details →
               </Link>
@@ -131,13 +216,10 @@ export default async function EventsPage({
       </ul>
 
       <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
-        {events.length >= limit && limit < MAX_LIMIT ? (
-          <Link href={`/events?limit=${Math.min(limit + PAGE_STEP, MAX_LIMIT)}`}>
-            Load more
-          </Link>
+        {allEvents.length >= limit && limit < MAX_LIMIT ? (
+          <Link href={loadMoreHref} style={{ color: "#1d4ed8", textDecoration: "underline" }}>Load more</Link>
         ) : null}
-
-        {limit > PAGE_STEP ? <Link href="/events">Show less</Link> : null}
+        {limit > PAGE_STEP ? <Link href={showLessHref} style={{ color: "#1d4ed8", textDecoration: "underline" }}>Show less</Link> : null}
       </div>
     </main>
   );
